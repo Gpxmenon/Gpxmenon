@@ -227,10 +227,23 @@
 
   /* Lists */
   .list-block{margin-bottom:46px}
+  .shelf{margin-bottom:38px}
+  .shelf-head{display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:10px}
+  .shelf-head .count{font-family:var(--font-head);letter-spacing:0;font-size:13px;color:var(--bg);background:var(--gold-soft);border-radius:999px;padding:0 9px;line-height:20px}
+  .shelf.now .shelf-head{color:var(--teal)}
+  .shelf.now .shelf-head .count{background:var(--teal)}
+  .shelf.now .book{border-left:2px solid rgba(79,179,169,.5);padding-left:14px}
   .booklist{list-style:none;border-top:1px solid var(--line)}
-  .booklist li{display:flex;justify-content:space-between;gap:20px;padding:14px 4px;border-bottom:1px solid var(--line)}
-  .booklist .title{font-family:var(--font-head);font-size:18px;color:var(--gold-pale)}
-  .booklist .by{color:var(--muted);font-size:13px}
+  .book{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:14px 6px;border-bottom:1px solid var(--line);transition:background .3s, padding-left .3s}
+  .book:hover{background:rgba(212,175,55,.04);padding-left:12px}
+  .book .title{display:block;font-family:var(--font-head);font-size:19px;color:var(--gold-pale);line-height:1.3}
+  .book .by{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .book .note{font-family:var(--font-head);font-style:italic;font-size:15px;color:var(--text);opacity:.85;margin:8px 0 0;max-width:62ch}
+  .b-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+  .stars{color:var(--gold);letter-spacing:2px;font-size:13px;text-shadow:0 0 8px rgba(212,175,55,.5)}
+  .stars .off{color:rgba(212,175,55,.2);text-shadow:none}
+  .cat{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 9px;white-space:nowrap}
+  @media (max-width:600px){.book{flex-direction:column;gap:8px}.b-side{flex-direction:row;align-items:center}}
   .empty{color:var(--muted);font-style:italic;font-size:13.5px;padding:16px 4px;border-bottom:1px solid var(--line)}
 
   /* ============ MOBILE ============ */
@@ -541,12 +554,123 @@
 
       <div class="list-block">
         <div class="sub">Reading List</div>
-        <!-- To add a book, copy this line and fill it in:
-             <li><span><span class="title">Book title</span><br><span class="by">Author</span></span><span class="when">2026</span></li>
-             Then delete the "empty" line below. -->
-        <ul class="booklist">
-          <li class="empty">Coming soon.</li>
-        </ul>
+        <!-- Synced from my Notion reading list. To add a book by hand, copy one <li class="book"> block
+             into the right shelf and edit it. Stars: put the number of filled stars (★) and empty ones in <span class="off">. -->
+        <div class="shelf now">
+          <div class="shelf-head"><span>Currently reading</span><span class="count">4</span></div>
+          <ul class="booklist">
+            <li class="book">
+              <div class="b-main"><span class="title">Cosmos</span><span class="by">Carl Sagan</span></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Secret Life of the Universe</span><span class="by">Nathalie Cabrol</span></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Fully Alive</span><span class="by">Elizabeth Oldfield</span></div>
+              <div class="b-side"></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Order of Time</span><span class="by">Carlo Rovelli</span><p class="note">Did not complete, not my cup of tea.</p></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+          </ul>
+        </div>
+        <div class="shelf ">
+          <div class="shelf-head"><span>Finished</span><span class="count">16</span></div>
+          <ul class="booklist">
+            <li class="book">
+              <div class="b-main"><span class="title">Project Hail Mary</span><span class="by">Andy Weir</span><p class="note">The best sci-fi I have read recently.</p></div>
+              <div class="b-side"><span class="stars" title="5 out of 5">★★★★★<span class="off"></span></span><span class="cat">Science Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">A Short History of Nearly Everything</span><span class="by">Bill Bryson</span><p class="note">I love how the author makes us excited about all the questions we asked as children, the ones adults called &quot;silly&quot;. Those were exactly the questions that needed answering. Remember, no question is dumb.</p></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Three-Body Problem</span><span class="by">Liu Cixin</span></div>
+              <div class="b-side"><span class="cat">Science Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Dark Forest</span><span class="by">Liu Cixin</span><p class="note">The second part of the trilogy.</p></div>
+              <div class="b-side"><span class="cat">Science Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Astrophysics for People in a Hurry</span><span class="by">Neil deGrasse Tyson</span></div>
+              <div class="b-side"><span class="stars" title="3 out of 5">★★★<span class="off">★★</span></span><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Norwegian Wood</span><span class="by">Haruki Murakami</span></div>
+              <div class="b-side"><span class="stars" title="5 out of 5">★★★★★<span class="off"></span></span><span class="cat">Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Alchemist</span><span class="by">Paulo Coelho</span></div>
+              <div class="b-side"><span class="stars" title="5 out of 5">★★★★★<span class="off"></span></span><span class="cat">Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Atomic Habits</span><span class="by">James Clear</span></div>
+              <div class="b-side"><span class="stars" title="5 out of 5">★★★★★<span class="off"></span></span><span class="cat">Self-help</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Ikigai</span><span class="by">Héctor García and Francesc Miralles</span></div>
+              <div class="b-side"><span class="stars" title="5 out of 5">★★★★★<span class="off"></span></span><span class="cat">Self-help</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Palace of Illusions</span><span class="by">Chitra Banerjee Divakaruni</span></div>
+              <div class="b-side"><span class="cat">Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Great Gatsby</span><span class="by">F. Scott Fitzgerald</span></div>
+              <div class="b-side"><span class="cat">Classic</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Planet 9</span><span class="by">Maya Kiran</span><p class="note">Not really a fan. I had high expectations since there are so few sci-fi stories in Malayalam, but the ending didn&#x27;t live up to them.</p></div>
+              <div class="b-side"><span class="stars" title="2 out of 5">★★<span class="off">★★★</span></span><span class="cat">Science Fiction</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Harry Potter and the Cursed Child</span><span class="by">Jack Thorne, J. K. Rowling and John Tiffany</span></div>
+              <div class="b-side"><span class="stars" title="3 out of 5">★★★<span class="off">★★</span></span><span class="cat">Fantasy</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Who Will Cry When You Die?</span><span class="by">Robin Sharma</span></div>
+              <div class="b-side"><span class="stars" title="3 out of 5">★★★<span class="off">★★</span></span><span class="cat">Self-help</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Rich Dad Poor Dad</span><span class="by">Robert Kiyosaki</span></div>
+              <div class="b-side"><span class="cat">Audiobook</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Space Encyclopedia</span></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+          </ul>
+        </div>
+        <div class="shelf ">
+          <div class="shelf-head"><span>Up next</span><span class="count">5</span></div>
+          <ul class="booklist">
+            <li class="book">
+              <div class="b-main"><span class="title">The Vital Question</span><span class="by">Nick Lane</span></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">Time&#x27;s Second Arrow</span><span class="by">Robert Hazen and Michael Wong</span></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">An Immense World</span><span class="by">Ed Yong</span></div>
+              <div class="b-side"><span class="cat">Science</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">White Nights and Other Stories</span><span class="by">Fyodor Dostoevsky</span></div>
+              <div class="b-side"><span class="cat">Classic</span></div>
+            </li>
+            <li class="book">
+              <div class="b-main"><span class="title">The Subtle Art of Not Giving a F*ck</span><span class="by">Mark Manson</span></div>
+              <div class="b-side"><span class="cat">Self-help</span></div>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Add more lists later by copying the whole "list-block" div above and changing the heading. -->
