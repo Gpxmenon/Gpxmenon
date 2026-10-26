@@ -1019,7 +1019,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
       tw:rand(0,6.28), ts:rand(.6,1.8), gold:Math.random()<.12
     }));
     const count = W < 700 ? 3 : 5;
-    groups = Array.from({length:count},(_,i)=>makeGroup(now() + i*3.5 + rand(0,2)));
+    groups = Array.from({length:count},(_,i)=>makeGroup(now() + i*1.6 + rand(0,1)));
     sparks = Array.from({length: W < 700 ? 14 : 28}, ()=>makeSpark(true));
   }
 
@@ -1046,14 +1046,14 @@ document.getElementById('yr').textContent = new Date().getFullYear();
           if(!seen.has(id)){seen.add(id); links.push([a,b]);}
         }
       });
-      return {pts, links, start, dur:rand(16,24), vx:rand(-.03,.03), vy:rand(-.02,.02), hex:true};
+      return {pts, links, start, dur:rand(9,13), vx:rand(-.16,.16), vy:rand(-.1,.1), hex:true};
     }
     const spread = rand(70,140), k = Math.floor(rand(5,8));
     let px = cx, py = cy;
     for(let i=0;i<k;i++){ px += rand(-spread,spread)*.6; py += rand(-spread,spread)*.5; pts.push({x:px,y:py}); }
     links = pts.slice(1).map((_,i)=>[i,i+1]);
     if(k>4) links.push([1,k-1]);
-    return {pts, links, start, dur:rand(14,22), vx:rand(-.04,.04), vy:rand(-.03,.03), hex:false};
+    return {pts, links, start, dur:rand(8,12), vx:rand(-.2,.2), vy:rand(-.13,.13), hex:false};
   }
 
   /* Tiny sparks rising from the early-Earth horizon, like a hydrothermal vent */
@@ -1114,7 +1114,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     drawAurora(t);
 
     for(const s of stars){
-      if(!reduce){ s.x += .035*s.z; s.y += .012*s.z; if(s.x>W+2) s.x=-2; if(s.y>H+2) s.y=-2; }
+      if(!reduce){ s.x += .16*s.z; s.y += .055*s.z; if(s.x>W+2) s.x=-2; if(s.y>H+2) s.y=-2; }
       const a = .35 + .55*Math.abs(Math.sin(t*s.ts + s.tw))*s.z;
       x.beginPath(); x.arc(s.x,s.y,s.r,0,6.283);
       x.fillStyle = s.gold ? `rgba(241,220,154,${a})` : `rgba(235,235,245,${a*.85})`;
@@ -1124,7 +1124,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     groups.forEach((g,gi)=>{
       const local = t - g.start;
       if(local < 0) return;
-      if(local > g.dur){ groups[gi] = makeGroup(t + rand(1,4)); return; }
+      if(local > g.dur){ groups[gi] = makeGroup(t + rand(.3,1.2)); return; }
       const p = local / g.dur;
       const fade = p<.25 ? p/.25 : p>.75 ? (1-p)/.25 : 1;
       if(!reduce) g.pts.forEach(pt=>{pt.x+=g.vx; pt.y+=g.vy;});
@@ -1157,7 +1157,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
       x.fill();
     });
 
-    if(!reduce && Math.random() < .0018 && shooters.length < 1){
+    if(!reduce && Math.random() < .006 && shooters.length < 2){
       shooters.push({x:rand(W*.2,W), y:rand(0,H*.4), vx:-rand(5,8), vy:rand(2,3.5), life:1});
     }
     shooters = shooters.filter(s=>{
