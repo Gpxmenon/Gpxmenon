@@ -234,6 +234,34 @@
   .card.feature .authors{color:var(--text);font-size:13px}
   @media (max-width:700px){.card.feature{grid-template-columns:1fr}.card.feature .shot{max-width:320px}}
 
+  /* Projects */
+  .project{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 30px 30px}
+  .project .when{display:block;font-size:14px;margin-bottom:6px}
+  .project h3{font-size:26px;max-width:30ch}
+  .project p{max-width:72ch}
+  .banner{margin:20px 0 24px;border-radius:12px;overflow:hidden;border:1px solid var(--line);cursor:zoom-in;position:relative}
+  .banner img{width:100%;display:block;aspect-ratio:3/1;object-fit:cover;transition:transform .8s ease}
+  .banner:hover img{transform:scale(1.03)}
+  .banner figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 16px 10px;font-size:12px;letter-spacing:.5px;color:var(--gold-pale);
+    background:linear-gradient(transparent, rgba(2,3,10,.85))}
+  .facets{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:26px 0 8px}
+  .facet{border-top:1px solid var(--gold);padding-top:14px}
+  .facet-head,.fig-head{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px}
+  .facet p{font-size:13.5px;color:var(--muted);margin:0}
+  .fig-head{margin-top:30px}
+  .figs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .figs figure{margin:0;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .figs img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#f4f1ea;cursor:zoom-in;display:block;transition:transform .5s ease}
+  .figs figure:hover img{transform:scale(1.02)}
+  .figs figcaption{font-size:12px;color:var(--muted);padding:10px 12px;line-height:1.5}
+  .figs .wide{grid-column:1/-1;flex-direction:row}
+  .figs .wide img{width:58%;aspect-ratio:16/9;flex:none}
+  .figs .wide figcaption{font-size:13px;padding:16px 18px;align-self:center}
+  .figs .wide b{color:var(--gold-pale);font-weight:normal;font-family:var(--font-head);font-size:16px;display:block;margin-bottom:6px}
+  .tag.live{color:var(--teal);border-color:rgba(79,179,169,.45)}
+  #projects .cards+.sub,#projects .project+.sub{margin-top:56px}
+  @media (max-width:700px){.project{padding:20px 18px}.project h3{font-size:22px}.figs .wide{flex-direction:column}.figs .wide img{width:100%}.banner img{aspect-ratio:2/1}}
+
   /* Lists */
   .list-block{margin-bottom:46px}
   .shelf{margin-bottom:38px}
@@ -326,16 +354,20 @@
         <span class="num">03</span>
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
         <span class="label">Experience &amp; Field</span></button></li>
-      <li><button class="tab" data-tab="conferences" role="tab">
+      <li><button class="tab" data-tab="projects" role="tab">
         <span class="num">04</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6.5L4.8 18.2A1.9 1.9 0 006.4 21h11.2a1.9 1.9 0 001.6-2.8L14 9.5V3"/><path d="M7.5 14.5h9"/></svg></span>
+        <span class="label">Projects</span></button></li>
+      <li><button class="tab" data-tab="conferences" role="tab">
+        <span class="num">05</span>
         <span class="ico"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0"/><path d="M12 17.5V21"/></svg></span>
         <span class="label">Conferences</span></button></li>
       <li><button class="tab" data-tab="awards" role="tab">
-        <span class="num">05</span>
+        <span class="num">06</span>
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></span>
         <span class="label">Awards</span></button></li>
       <li><button class="tab" data-tab="lists" role="tab">
-        <span class="num">06</span>
+        <span class="num">07</span>
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 5.5v14C9.5 18 6.5 18 4 19.5z"/><path d="M20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/></svg></span>
         <span class="label">Lists</span></button></li>
     </ul>
@@ -540,9 +572,115 @@
       </div>
     </section>
 
-    <!-- ========== 04 CONFERENCES ========== -->
-    <section class="panel" id="conferences" role="tabpanel">
+    <!-- ========== 04 PROJECTS ========== -->
+    <section class="panel" id="projects" role="tabpanel">
       <div class="kicker">04</div>
+      <h2>Projects</h2>
+      <div class="rule"></div>
+
+      <div class="sub">Master's Thesis</div>
+      <article class="project">
+        <span class="when">2025 · Siljan impact crater, Sweden</span>
+        <h3>Bioprospecting for Hydrocarbon-Degrading Microorganisms at the Siljan Impact Crater</h3>
+        <div class="where">Swedish Museum of Natural History, Stockholm · supervised by Dr. Magnus Ivarsson</div>
+
+        <!-- Photos are served from the public Notion page. To host a copy here instead,
+             put the file in the images folder and change the src to "images/filename.jpg". -->
+        <figure class="banner"><img src="https://gpxmenon.notion.site/image/attachment%3Aa3022b53-a4cb-432c-80a1-eb17d64b352c%3Aimage.png?table=block&amp;id=295f61d0-2dcf-806d-b170-f8a2ec17f522&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1600&amp;cache=v2" alt="Field work at Solberga Quarry, Siljan" loading="lazy"><figcaption>Field work at Solberga Quarry</figcaption></figure>
+
+        <p class="lead">Impact craters, and the hydrothermal systems they create, may be good places for microbial life, both on Earth and possibly on other planets. My thesis looked at the late Devonian Siljan impact crater in Sweden, a key example of how a crater can support deep microbial life hundreds of millions of years after the impact-driven hydrothermal activity has ended. Siljan is also known for significant microbial methane seepage.</p>
+        <p>These crater microbial communities are heterotrophic, so they could get their carbon and energy from hydrocarbons moving through the fractures the impact created. To test this in a modern setting, I searched the crater for hydrocarbon-degrading microorganisms, particularly fungi.</p>
+
+        <div class="facets">
+          <div class="facet">
+            <div class="facet-head">Methods</div>
+            <p>Crude oil was sampled from drill holes in the Solberga quarry and cultured on petri dishes. Pure cultures were identified by Sanger sequencing of the fungal ITS region and by microscopy with calcofluor staining. The redox indicator DCPIP (2,6-dichlorophenol-indophenol) served as a first test of hydrocarbon degradation, followed by hexane-based hydrocarbon extraction and GC-MS for a quantitative check.</p>
+          </div>
+          <div class="facet">
+            <div class="facet-head">Key findings</div>
+            <p>Seven isolates were identified: <i>Ascochyta phacae</i>, <i>Penicillium pancosmium</i>, <i>Rhodotorula mucilaginosa</i>, <i>Penicillium citreosulfuratum</i>, <i>Absidia glauca</i>, <i>Fusarium salinense</i> and <i>Mucor hiemalis</i>. <i>P. citreosulfuratum</i> performed best in the DCPIP assays, and GC-MS confirmed hydrocarbon degradation in the samples, although some peaks could not be fully resolved.</p>
+          </div>
+          <div class="facet">
+            <div class="facet-head">Why it matters</div>
+            <p>Siljan fungi can break down the crater's crude oil and feed subsurface carbon cycling: their products could be used by methanogens in the crater to make methane. This supports the idea that impact craters can be long-lived biological systems. Seasonal methane changes detected on Mars suggest this kind of cycling might happen beyond Earth, and that heterotrophic life deserves a place alongside purely abiotic explanations.</p>
+          </div>
+        </div>
+
+        <div class="fig-head">Results</div>
+        <div class="figs">
+          <figure><img src="https://gpxmenon.notion.site/image/attachment%3A53210cb3-eb9c-4744-85f7-1af1f10f0159%3Aimage.png?table=block&amp;id=295f61d0-2dcf-805c-9d7a-f50108717289&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1400&amp;cache=v2" alt="Isolates obtained (A to H.1)" loading="lazy"><figcaption>Isolates obtained (A to H.1)</figcaption></figure>
+          <figure><img src="https://gpxmenon.notion.site/image/attachment%3A6b69bfbd-994a-4631-af88-9e6a351f298d%3Aimage.png?table=block&amp;id=295f61d0-2dcf-8089-ba2a-fd2482e4bcfe&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1400&amp;cache=v2" alt="Results from the DCPIP assays" loading="lazy"><figcaption>Results from the DCPIP assays</figcaption></figure>
+          <figure><img src="https://gpxmenon.notion.site/image/attachment%3A69132065-63e2-4fea-a6f0-dae9572ac6b3%3Aimage.png?table=block&amp;id=295f61d0-2dcf-803b-a558-ff2ada62b0f8&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1400&amp;cache=v2" alt="Results from hexane extraction" loading="lazy"><figcaption>Results from hexane extraction</figcaption></figure>
+          <figure class="wide"><img src="https://gpxmenon.notion.site/image/attachment%3Ab7925de1-6738-4da9-8e9c-c77bd2834c07%3Aimage.png?table=block&amp;id=295f61d0-2dcf-80ae-987b-eac36a724de3&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1400&amp;cache=v2" alt="Siljan on Earth compared with Gale Crater on Mars" loading="lazy"><figcaption><b>Siljan and Gale Crater compared.</b> At Siljan, the impact matured the shale and released oil that fungi use, producing hydrogen and CO₂ under anaerobic conditions, which methanogens turn into methane through the hydrogenotrophic pathway. On Mars, organics delivered by meteorites, or preserved kerogen if life ever existed, could feed heterotrophs that in turn support methanogens. The methane could collect in clathrates and be released later, which may explain the methane spikes seen there.</figcaption></figure>
+        </div>
+      </article>
+
+      <div class="sub">Current Work</div>
+      <div class="cards">
+        <div class="card">
+          <span class="when">PhD · University of Copenhagen</span>
+          <h3>Abiotic Baseline</h3>
+          <p>Building a robust abiotic baseline to tell biological from non-biological carbon in 3.7 to 3.8 billion-year-old rocks.</p>
+          <span class="tag live">In progress</span>
+        </div>
+        <div class="card">
+          <span class="when">PhD · University of Copenhagen</span>
+          <h3>Graphite Biogenicity Review: Isua</h3>
+          <p>A review of the evidence for and against a biological origin of graphite in the Isua Supracrustal Belt, Greenland.</p>
+          <span class="tag live">In progress</span>
+        </div>
+        <div class="card">
+          <span class="when">From the master's thesis</span>
+          <h3>Siljan Fungi Manuscript</h3>
+          <p>Writing up the Siljan hydrocarbon-degrading fungi work for publication.</p>
+          <span class="tag live">In progress</span>
+        </div>
+      </div>
+
+      <div class="sub">Master's Coursework Projects</div>
+      <div class="cards">
+        <div class="card">
+          <span class="when">University of Lille</span>
+          <h3>Analysis of a 3.5 Ga Sample from the Dresser Formation, Pilbara Craton</h3>
+          <p>Used TEM, high-resolution TEM and EDX spectroscopy to probe the possible origins of organic matter in the sample, building an understanding of biogenicity criteria in early life studies. Supervised by Dr. Kevin Lepot.</p>
+          <span class="tag">Western Australia</span>
+        </div>
+        <div class="card">
+          <span class="when">University of Lille</span>
+          <h3>Benthic Foraminiferal Diversity and the Sampling Problem</h3>
+          <p>Compared foraminiferal diversity and density between two sampling sites on the Rhuys peninsula. Supervised by Dr. Eric Armynot du Châtelet.</p>
+          <span class="tag">Micropalaeontology</span>
+        </div>
+        <div class="card">
+          <span class="when">University of Lille</span>
+          <h3>Palaeodiversity of Trilobites from the Cambrian to the Permian</h3>
+          <p>Applied quantitative methods to trace evolutionary patterns and diversity trends in trilobite assemblages across major geological periods.</p>
+          <span class="tag">Quantitative palaeontology</span>
+        </div>
+        <div class="card">
+          <span class="when">Uppsala University</span>
+          <h3>Odd Gene Expression in <i>Parasteatoda tepidariorum</i> and <i>Phalangium opilio</i></h3>
+          <p>Hands-on PCR and whole-mount in situ hybridisation to compare Odd gene expression in spiders and harvestmen, looking at traits shared by all chelicerates and those unique to spiders. Supervised by Dr. Ralf Janssen.</p>
+          <span class="tag">Evo-devo</span>
+        </div>
+        <div class="card">
+          <span class="when">Uppsala University</span>
+          <h3>Humerus Evolution: Epiphyseal Fusion in Mammals</h3>
+          <p>Analysed how far, and in what pattern, the secondary ossification centres fuse with the bone shaft across mammal orders, using VGStudio.</p>
+          <span class="tag">3D imaging</span>
+        </div>
+        <div class="card">
+          <span class="when">Uppsala University</span>
+          <h3>Zebrafish Bone and Cartilage Staining</h3>
+          <p>Alizarin red and Alcian blue staining to visualise bone and cartilage, plus fluorescent transgenic lines to follow cellular processes.</p>
+          <span class="tag">Developmental biology</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 05 CONFERENCES ========== -->
+    <section class="panel" id="conferences" role="tabpanel">
+      <div class="kicker">05</div>
       <h2>Conferences &amp; Presentations</h2>
       <div class="rule"></div>
       <div class="cards">
@@ -582,9 +720,9 @@
       </div>
     </section>
 
-    <!-- ========== 05 AWARDS ========== -->
+    <!-- ========== 06 AWARDS ========== -->
     <section class="panel" id="awards" role="tabpanel">
-      <div class="kicker">05</div>
+      <div class="kicker">06</div>
       <h2>Awards &amp; Achievements</h2>
       <div class="rule"></div>
       <div class="cards">
@@ -616,9 +754,9 @@
       </div>
     </section>
 
-    <!-- ========== 06 LISTS ========== -->
+    <!-- ========== 07 LISTS ========== -->
     <section class="panel" id="lists" role="tabpanel">
-      <div class="kicker">06</div>
+      <div class="kicker">07</div>
       <h2>Lists</h2>
       <div class="rule"></div>
 
@@ -692,7 +830,7 @@
 /* ============ PHOTO VIEWER ============ */
 (() => {
   const lb = document.getElementById('lightbox'), im = lb.querySelector('img'), cap = lb.querySelector('.cap');
-  document.querySelectorAll('.gallery img').forEach(i=>i.addEventListener('click',()=>{
+  document.querySelectorAll('.gallery img, .banner img, .figs img').forEach(i=>i.addEventListener('click',()=>{
     im.src = i.src; im.alt = i.alt; cap.textContent = i.alt; lb.classList.add('open');
   }));
   const close = ()=>lb.classList.remove('open');
