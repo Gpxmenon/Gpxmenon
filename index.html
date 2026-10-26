@@ -295,6 +295,24 @@
   @keyframes spin{to{transform:translateX(-30%)}}
   @media (max-width:860px){.planet{width:46px;height:46px;top:7%;right:7%;opacity:.42}}
 
+  /* Cosmic sound toggle */
+  .sound-toggle{position:fixed;right:22px;bottom:22px;z-index:6;display:flex;align-items:center;gap:10px;
+    height:40px;padding:0 14px 0 12px;border-radius:999px;cursor:pointer;
+    background:rgba(4,6,14,.72);border:1px solid var(--line);color:var(--gold-pale);
+    font-family:var(--font-body);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    backdrop-filter:blur(6px);transition:border-color .3s,box-shadow .3s,transform .3s}
+  .sound-toggle:hover{border-color:var(--gold);box-shadow:0 0 14px rgba(212,175,55,.35);transform:translateY(-2px)}
+  .sound-toggle:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+  .sound-toggle .bars{display:flex;align-items:flex-end;gap:2px;height:14px}
+  .sound-toggle .bars i{display:block;width:2px;height:3px;background:var(--gold);border-radius:1px;opacity:.6;transition:height .4s}
+  .sound-toggle.on{border-color:var(--gold);box-shadow:0 0 16px rgba(212,175,55,.3)}
+  .sound-toggle.on .bars i{opacity:1;animation:eq 1.6s ease-in-out infinite}
+  .sound-toggle.on .bars i:nth-child(2){animation-delay:-.4s}
+  .sound-toggle.on .bars i:nth-child(3){animation-delay:-.9s}
+  .sound-toggle.on .bars i:nth-child(4){animation-delay:-1.2s}
+  @keyframes eq{0%,100%{height:3px}50%{height:14px}}
+  @media (max-width:860px){.sound-toggle{bottom:84px;right:14px;height:36px;padding:0 12px}.sound-toggle .lbl{display:none}}
+
   /* Lists */
   .list-block{margin-bottom:46px}
   .shelf{margin-bottom:38px}
@@ -898,6 +916,10 @@
   </main>
 </div>
 
+<button class="sound-toggle" id="soundToggle" aria-pressed="false" aria-label="Play cosmic ambient sound" title="Cosmic sound">
+  <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="lbl">Sound off</span>
+</button>
+
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
   <button class="x" aria-label="Close">×</button><img alt=""><div class="cap"></div>
 </div>
@@ -1165,6 +1187,83 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
     if(!open) b.closest('.project').scrollIntoView({behavior:'smooth',block:'nearest'});
   });
 });
+</script>
+
+<script>
+/* ============ COSMIC SOUND (generated live, no audio file) ============ */
+(() => {
+  const btn = document.getElementById('soundToggle'); if(!btn) return;
+  const lbl = btn.querySelector('.lbl');
+  let ctx, master, on = false, chimeTimer;
+
+  function build(){
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0;
+    // soft reverb made from fading noise
+    const rev = ctx.createConvolver(), len = ctx.sampleRate * 5, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}
+    rev.buffer = ir;
+    const wet = ctx.createGain(); wet.gain.value = .7;
+    master.connect(ctx.destination); master.connect(rev); rev.connect(wet); wet.connect(ctx.destination);
+
+    // warm drone: A, E, A, C#, E with slow breathing filter
+    const filt = ctx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=520; filt.Q.value=2;
+    const lfo = ctx.createOscillator(), lfoAmt = ctx.createGain();
+    lfo.frequency.value = .04; lfoAmt.gain.value = 260; lfo.connect(lfoAmt); lfoAmt.connect(filt.frequency); lfo.start();
+    filt.connect(master);
+    [55,82.41,110,138.59,164.81].forEach((f,i)=>{
+      [-6,6].forEach(det=>{
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = i<2 ? 'sine' : 'triangle'; o.frequency.value = f; o.detune.value = det;
+        g.gain.value = i<2 ? .12 : .045;
+        // each voice swells slowly at its own pace
+        const sw = ctx.createOscillator(), swg = ctx.createGain();
+        sw.frequency.value = .02 + Math.random()*.05; swg.gain.value = g.gain.value*.6;
+        sw.connect(swg); swg.connect(g.gain); sw.start();
+        o.connect(g); g.connect(filt); o.start();
+      });
+    });
+  }
+
+  // twinkling star chimes on a pentatonic scale
+  const notes = [440,493.88,554.37,659.25,739.99,880,987.77,1108.73,1318.51];
+  function chime(){
+    if(!on) return;
+    const t = ctx.currentTime, f = notes[Math.floor(Math.random()*notes.length)];
+    const o = ctx.createOscillator(), g = ctx.createGain(), p = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.05,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+4);
+    o.connect(g);
+    if(p){p.pan.value=Math.random()*1.6-.8; g.connect(p); p.connect(master);} else g.connect(master);
+    o.start(t); o.stop(t+4.2);
+    chimeTimer = setTimeout(chime, 1800 + Math.random()*4200);
+  }
+
+  function setUI(){
+    btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on);
+    btn.setAttribute('aria-label', on ? 'Pause cosmic ambient sound' : 'Play cosmic ambient sound');
+    lbl.textContent = on ? 'Sound on' : 'Sound off';
+  }
+
+  btn.addEventListener('click', () => {
+    if(!ctx) build();
+    on = !on; setUI();
+    const t = ctx.currentTime;
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t);
+    if(on){
+      ctx.resume(); master.gain.linearRampToValueAtTime(.55, t+3); clearTimeout(chimeTimer); chimeTimer=setTimeout(chime, 1500);
+    } else {
+      clearTimeout(chimeTimer); master.gain.linearRampToValueAtTime(0, t+1.2);
+      setTimeout(()=>{ if(!on) ctx.suspend(); }, 1400);
+    }
+  });
+
+  // pause quietly when the tab is hidden
+  document.addEventListener('visibilitychange', () => {
+    if(!ctx || !on) return;
+    if(document.hidden){ clearTimeout(chimeTimer); ctx.suspend(); } else { ctx.resume(); chime(); }
+  });
+})();
 </script>
 </body>
 </html>
