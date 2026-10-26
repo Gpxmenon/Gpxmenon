@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gouripriya S. Menon</title>
+<meta name="description" content="Gouripriya S. Menon, PhD student in astrobiology at the University of Copenhagen. Early life, graphite biogenicity and the Isua Supracrustal Belt.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23000'/><path d='M50 14 L58 42 L86 50 L58 58 L50 86 L42 58 L14 50 L42 42 Z' fill='%23d4af37'/></svg>">
+<style>
+  /* ============ THEME ============
+     Fonts: headings in Times New Roman, body in Verdana.
+     To use one font everywhere, set both variables to the same value. */
+  :root{
+    --font-head: "Times New Roman", Times, Georgia, serif;
+    --font-body: Verdana, Geneva, Tahoma, sans-serif;
+    --bg: #04060d;
+    --panel: rgba(8, 11, 22, 0.72);
+    --gold: #d4af37;
+    --gold-soft: #b8963a;
+    --gold-pale: #f1dc9a;
+    --text: #e9e4d6;
+    --muted: #9a927e;
+    --line: rgba(212, 175, 55, 0.22);
+    --teal: #4fb3a9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(ellipse 60% 45% at 78% 18%, rgba(46, 62, 120, .22), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 18% 85%, rgba(70, 48, 105, .16), transparent 70%),
+      linear-gradient(180deg, #060a18 0%, var(--bg) 55%, #020308 100%);
+    background-attachment:fixed;
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.75;
+    overflow-x:hidden;
+  }
+  a{color:var(--gold-pale);text-decoration:none;border-bottom:1px solid var(--line);transition:color .2s,border-color .2s}
+  a:hover{color:var(--gold);border-color:var(--gold)}
+
+  /* ============ SPACE BACKGROUND ============ */
+  #sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+  .veil{ /* keeps the sky behind the text, never over it */
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(ellipse at 60% 40%, rgba(0,0,0,0) 0%, rgba(2,3,10,.3) 60%, rgba(2,3,10,.7) 100%);
+  }
+
+  /* ============ LAYOUT ============ */
+  .shell{position:relative;z-index:2;display:flex;min-height:100vh}
+
+  /* Side tabs */
+  nav.side{
+    position:fixed;top:0;left:0;bottom:0;width:250px;
+    padding:48px 26px 28px;
+    display:flex;flex-direction:column;
+    border-right:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(4,6,14,.85), rgba(4,6,14,.55));
+    backdrop-filter:blur(6px);
+  }
+  .brand{font-family:var(--font-head);color:var(--gold);font-size:30px;line-height:1.1;letter-spacing:.5px}
+  .brand small{display:block;font-family:var(--font-body);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:10px}
+  .tabs{list-style:none;margin-top:44px;display:flex;flex-direction:column;gap:6px}
+  .tab{
+    display:flex;align-items:center;gap:14px;width:100%;
+    background:none;border:none;cursor:pointer;text-align:left;
+    padding:10px 12px;border-radius:10px;
+    color:var(--muted);font-family:var(--font-body);font-size:13.5px;letter-spacing:.4px;
+    position:relative;transition:color .25s, background .25s;
+  }
+  .tab .num{font-family:var(--font-head);font-size:13px;color:var(--gold-soft);opacity:.7;width:18px}
+  .tab .ico{
+    width:30px;height:30px;flex:none;display:grid;place-items:center;
+    border-radius:50%;border:1px solid var(--line);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s, background .3s;
+  }
+  .tab .ico svg{width:15px;height:15px;stroke:var(--gold-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+  .tab:hover{color:var(--text)}
+  .tab:hover .ico{transform:scale(1.18) rotate(-8deg);border-color:var(--gold)}
+  .tab:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+  .tab.active{color:var(--gold-pale);background:rgba(212,175,55,.07)}
+  .tab.active .ico{
+    background:radial-gradient(circle, rgba(212,175,55,.28), rgba(212,175,55,.04));
+    border-color:var(--gold);
+    box-shadow:0 0 14px rgba(212,175,55,.45), 0 0 34px rgba(212,175,55,.15);
+  }
+  .tab.active .ico svg{stroke:var(--gold-pale)}
+  .tab.active::before{
+    content:"";position:absolute;left:-26px;top:50%;width:3px;height:60%;
+    transform:translateY(-50%);background:var(--gold);border-radius:0 3px 3px 0;
+    box-shadow:0 0 10px var(--gold);
+  }
+  /* the "pop" when a tab is chosen */
+  .tab.pop .ico{animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+  .tab.pop .ico::after{
+    content:"";position:absolute;width:30px;height:30px;border-radius:50%;
+    border:1px solid var(--gold);animation:ring .7s ease-out forwards;
+  }
+  @keyframes pop{
+    0%{transform:scale(.55) rotate(-25deg)}
+    55%{transform:scale(1.3) rotate(8deg)}
+    100%{transform:scale(1) rotate(0)}
+  }
+  @keyframes ring{
+    0%{transform:scale(1);opacity:.9}
+    100%{transform:scale(2.2);opacity:0}
+  }
+  /* Collapsible rail */
+  nav.side{transition:width .45s cubic-bezier(.2,.7,.2,1), padding .45s}
+  main{transition:margin-left .45s cubic-bezier(.2,.7,.2,1)}
+  .brand .mono{display:none;font-size:34px;text-align:center}
+  .rail-toggle{
+    position:absolute;top:52px;right:-14px;width:28px;height:28px;border-radius:50%;
+    border:1px solid var(--line);background:#070a16;cursor:pointer;display:grid;place-items:center;
+    transition:transform .45s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s;
+  }
+  .rail-toggle svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .rail-toggle:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.4)}
+  @media (min-width:861px){
+    body.collapsed nav.side{width:84px;padding:48px 14px 28px}
+    body.collapsed main{margin-left:84px}
+    body.collapsed .brand .full, body.collapsed .side-foot, body.collapsed .tab .num{display:none}
+    body.collapsed .brand .mono{display:block}
+    body.collapsed .rail-toggle{transform:rotate(180deg)}
+    body.collapsed .tab{justify-content:center;padding:10px 0}
+    body.collapsed .tab.active::before{left:-14px}
+    body.collapsed .tab .label{
+      position:absolute;left:64px;top:50%;white-space:nowrap;pointer-events:none;
+      transform:translate(-8px,-50%);opacity:0;
+      background:rgba(7,10,22,.95);border:1px solid var(--line);border-radius:8px;padding:4px 12px;
+      color:var(--gold-pale);transition:opacity .25s, transform .25s;
+    }
+    body.collapsed .tab:hover .label, body.collapsed .tab:focus-visible .label{opacity:1;transform:translate(0,-50%)}
+  }
+  .side-foot{margin-top:auto;font-size:11px;color:var(--muted);letter-spacing:.5px}
+  .side-foot a{border:none;color:var(--muted)}
+  .side-foot a:hover{color:var(--gold)}
+
+  /* Main content */
+  main{margin-left:250px;flex:1;padding:72px 7vw 90px;max-width:calc(250px + 980px)}
+  .panel{display:none}
+  .panel.show{display:block;animation:rise .7s cubic-bezier(.2,.7,.2,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+  .kicker{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold-soft)}
+  h1,h2,h3{font-family:var(--font-head);font-weight:normal;color:var(--gold-pale)}
+  h1{font-size:clamp(38px,5vw,58px);line-height:1.08;margin:12px 0 26px}
+  h2{font-size:clamp(30px,3.6vw,42px);margin:10px 0 34px}
+  h3{font-size:21px;color:var(--gold-pale);line-height:1.35}
+  .rule{width:64px;height:1px;background:var(--gold);margin:0 0 34px;box-shadow:0 0 8px var(--gold)}
+  p{margin-bottom:16px;max-width:68ch}
+  .lead{font-size:16px;color:var(--text)}
+  .muted{color:var(--muted)}
+
+  /* Home */
+  .hero{display:grid;grid-template-columns:1fr 270px;gap:56px;align-items:start}
+  .portrait{position:relative;width:260px;aspect-ratio:1;display:grid;place-items:center;margin-top:10px}
+  .photo{
+    width:78%;aspect-ratio:1;border-radius:50%;overflow:hidden;position:relative;z-index:1;
+    background:radial-gradient(circle at 50% 35%, rgba(212,175,55,.18), rgba(4,6,13,.8));
+    display:grid;place-items:center;color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    box-shadow:0 0 0 1px rgba(212,175,55,.55), 0 0 45px rgba(212,175,55,.18), 0 0 120px rgba(60,80,160,.18);
+  }
+  .photo img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;filter:saturate(.92) contrast(1.03)}
+  .orbit{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(212,175,55,.28);animation:spin 40s linear infinite}
+  .orbit::after{ /* small gold "moon" travelling the ring */
+    content:"";position:absolute;top:50%;left:-4px;width:8px;height:8px;margin-top:-4px;border-radius:50%;
+    background:var(--gold-pale);box-shadow:0 0 10px var(--gold),0 0 22px rgba(212,175,55,.6);
+  }
+  .orbit.two{inset:-14px;border-style:dashed;border-color:rgba(212,175,55,.13);animation-duration:70s;animation-direction:reverse}
+  .orbit.two::after{width:5px;height:5px;margin-top:-2.5px;left:-2.5px;opacity:.8}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 30px}
+  .chip{font-size:12px;letter-spacing:.5px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;color:var(--gold-pale);background:rgba(212,175,55,.05)}
+  .contact{margin-top:40px;padding-top:26px;border-top:1px solid var(--line)}
+  .contact-links{display:flex;flex-wrap:wrap;gap:22px;margin-top:12px}
+
+  /* Timeline entries */
+  .entries{position:relative;padding-left:30px;border-left:1px solid var(--line)}
+  .entry{position:relative;padding:0 0 38px;background:none}
+  .entry:last-child{padding-bottom:0}
+  .entry::before{
+    content:"";position:absolute;left:-35px;top:9px;width:9px;height:9px;border-radius:50%;
+    background:var(--bg);border:1px solid var(--gold);box-shadow:0 0 8px rgba(212,175,55,.6);
+  }
+  .meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;align-items:baseline}
+  .when{font-family:var(--font-head);color:var(--gold);font-size:16px;white-space:nowrap}
+  .where{color:var(--muted);font-size:13px;margin:4px 0 10px}
+  .entry ul{margin:8px 0 0 18px}
+  .entry li{margin-bottom:5px;max-width:66ch}
+  .entry li::marker{color:var(--gold-soft)}
+  .sub{font-family:var(--font-head);font-size:24px;color:var(--gold);margin:52px 0 26px;display:flex;align-items:center;gap:14px}
+  .sub::after{content:"";flex:1;height:1px;background:var(--line)}
+  .sub:first-of-type{margin-top:0}
+
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
+  .ph{aspect-ratio:4/3;border:1px dashed var(--line);border-radius:10px;display:grid;place-items:center;
+      font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.015);overflow:hidden}
+  .ph img{width:100%;height:100%;object-fit:cover}
+
+  /* Cards (awards, conferences) */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;
+    transition:transform .35s ease, border-color .35s, box-shadow .35s;
+  }
+  .card:hover{transform:translateY(-4px);border-color:rgba(212,175,55,.55);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 22px rgba(212,175,55,.08)}
+  .card .when{display:block;font-size:14px;margin-bottom:8px}
+  .card h3{font-size:19px;margin-bottom:8px}
+  .card p{font-size:13.5px;color:var(--muted);margin:0}
+  .tag{display:inline-block;margin-top:12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);border:1px solid var(--line);padding:2px 10px;border-radius:999px}
+
+  /* Photos inside entries and cards */
+  .ph.tall{aspect-ratio:4/5}
+  .ph img{transition:transform .6s ease}
+  .ph:hover img{transform:scale(1.04)}
+  figure.ph{border-style:solid;border-color:var(--line)}
+  .card.feature{grid-column:1/-1;display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:28px;align-items:center;padding:20px}
+  .card.feature .shot{border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:3/4}
+  .card.feature .shot img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
+  .card.feature h3{font-size:23px;margin:4px 0 12px}
+  .card.feature p{font-size:14px;margin-bottom:10px}
+  .card.feature .authors{color:var(--text);font-size:13px}
+  @media (max-width:700px){.card.feature{grid-template-columns:1fr}.card.feature .shot{max-width:320px}}
+
+  /* Lists */
+  .list-block{margin-bottom:46px}
+  .booklist{list-style:none;border-top:1px solid var(--line)}
+  .booklist li{display:flex;justify-content:space-between;gap:20px;padding:14px 4px;border-bottom:1px solid var(--line)}
+  .booklist .title{font-family:var(--font-head);font-size:18px;color:var(--gold-pale)}
+  .booklist .by{color:var(--muted);font-size:13px}
+  .empty{color:var(--muted);font-style:italic;font-size:13.5px;padding:16px 4px;border-bottom:1px solid var(--line)}
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 860px){
+    nav.side{position:fixed;top:auto;bottom:0;left:0;right:0;width:auto;height:auto;padding:8px 6px;
+      flex-direction:row;border-right:none;border-top:1px solid var(--line);z-index:5;background:rgba(4,6,14,.92)}
+    .brand,.side-foot,.rail-toggle{display:none}
+    .tabs{flex-direction:row;margin:0;gap:0;width:100%;justify-content:space-around}
+    .tab{flex-direction:column;gap:4px;padding:6px 4px;font-size:10px;align-items:center;letter-spacing:0}
+    .tab .num{display:none}
+    .tab.active::before{left:50%;top:-8px;width:40%;height:2px;transform:translateX(-50%)}
+    main{margin-left:0;padding:48px 18px 120px}
+    .mobile-brand{display:block !important}
+    .hero{grid-template-columns:1fr;gap:30px}
+    .portrait{width:190px;order:-1;margin:0 auto 10px}
+  }
+  .mobile-brand{display:none;font-family:var(--font-head);color:var(--gold);font-size:22px;margin-bottom:30px}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="veil"></div>
+
+<div class="shell">
+  <nav class="side" aria-label="Sections">
+    <div class="brand"><span class="full">Gouripriya<br>S. Menon</span><span class="mono">G</span></div>
+    <button class="rail-toggle" id="railToggle" aria-label="Collapse menu" title="Collapse menu">
+      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+
+    <ul class="tabs" role="tablist">
+      <li><button class="tab" data-tab="home" role="tab">
+        <span class="num">01</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10.5" ry="3.6" transform="rotate(-20 12 12)"/></svg></span>
+        <span class="label">Home</span></button></li>
+      <li><button class="tab" data-tab="education" role="tab">
+        <span class="num">02</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg></span>
+        <span class="label">Education</span></button></li>
+      <li><button class="tab" data-tab="experience" role="tab">
+        <span class="num">03</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
+        <span class="label">Experience &amp; Field</span></button></li>
+      <li><button class="tab" data-tab="conferences" role="tab">
+        <span class="num">04</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0"/><path d="M12 17.5V21"/></svg></span>
+        <span class="label">Conferences</span></button></li>
+      <li><button class="tab" data-tab="awards" role="tab">
+        <span class="num">05</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></span>
+        <span class="label">Awards</span></button></li>
+      <li><button class="tab" data-tab="lists" role="tab">
+        <span class="num">06</span>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 5.5v14C9.5 18 6.5 18 4 19.5z"/><path d="M20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/></svg></span>
+        <span class="label">Lists</span></button></li>
+    </ul>
+
+    <div class="side-foot">
+      <a href="mailto:gpx.menon@gmail.com">gpx.menon@gmail.com</a><br>
+      © <span id="yr"></span> Gouripriya S. Menon
+    </div>
+  </nav>
+
+  <main>
+    <div class="mobile-brand">Gouripriya S. Menon</div>
+
+    <!-- ========== 01 HOME ========== -->
+    <section class="panel" id="home" role="tabpanel">
+      <div class="hero">
+        <div>
+          <div class="kicker">Astrobiology · Early Earth · Origins of Life</div>
+          <h1>Hi! I'm Gouri.</h1>
+          <div class="rule"></div>
+          <p class="lead">I'm Gouripriya S. Menon, an aspiring astrobiologist from Kerala, India. With a background in geology and palaeontology, I'm driven by a deep curiosity about the origins of life on Earth and how that understanding can guide our search for life elsewhere in our solar system and beyond.</p>
+          <p>I am a PhD student at the University of Copenhagen, Denmark, where I work on improving how we tell biological carbon apart from non-biological carbon in Earth's oldest rocks: the 3.7 to 3.8 billion-year-old Isua Supracrustal Belt in Greenland.</p>
+          <p>I've always been fascinated by the intersections of mythology, philosophy and science, and this space is where I hope to bring together my thoughts, experiences and scientific journey.</p>
+
+          <div class="chips">
+            <span class="chip">Biosignatures</span>
+            <span class="chip">Graphite biogenicity</span>
+            <span class="chip">Isua, Greenland</span>
+            <span class="chip">Palaeontology</span>
+            <span class="chip">Sample return missions</span>
+          </div>
+
+          <div class="contact">
+            <div class="kicker">Get in touch</div>
+            <div class="contact-links">
+              <a href="mailto:gpx.menon@gmail.com">gpx.menon@gmail.com</a>
+              <a href="https://www.linkedin.com/in/gpsmenon/" target="_blank" rel="noopener">LinkedIn</a>
+              <!-- <a href="cv.pdf" target="_blank">CV</a> -->
+            </div>
+          </div>
+        </div>
+        <!-- PHOTO: to swap, put a new photo in the images folder and change the src below -->
+        <div class="portrait">
+          <div class="orbit two"></div>
+          <div class="orbit"></div>
+          <div class="photo"><img src="images/gouri-iceland.jpg" alt="Gouripriya S. Menon in Iceland"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 02 EDUCATION ========== -->
+    <section class="panel" id="education" role="tabpanel">
+      <div class="kicker">02</div>
+      <h2>Education</h2>
+      <div class="rule"></div>
+
+      <div class="entries">
+        <article class="entry">
+          <div class="meta"><h3>Doctoral Candidate</h3><span class="when">2026 to 2029</span></div>
+          <div class="where">University of Copenhagen, Denmark</div>
+          <p>Working on strengthening the criteria for determining biogenicity in studies of early life on Earth and for future sample return missions.</p>
+        </article>
+
+        <article class="entry">
+          <div class="meta"><h3>Erasmus Mundus Joint Master's (PANGEA)</h3><span class="when">2023 to 2025</span></div>
+          <div class="where">University of Lille, France &amp; Uppsala University, Sweden</div>
+          <ul>
+            <li><b>Thesis:</b> "Bioprospecting for hydrocarbon-degrading microorganisms at the Siljan impact crater", supervised by Dr. Magnus Ivarsson (Swedish Museum of Natural History, Stockholm)</li>
+            <li><b>Courses (Lille):</b> Micropalaeontology, Phylogenetics, Molecular Approaches to Geobiology (IR, Raman, SEM, TEM, XRF, CL), Quantitative Palaeontology</li>
+            <li><b>Courses (Uppsala):</b> Evolution and Development, Origins and Early Evolution of Life</li>
+            <li><b>Lab experience:</b> Morphometrics, PAST, VG Studio, PCR, microscopy, staining</li>
+          </ul>
+        </article>
+
+        <article class="entry">
+          <div class="meta"><h3>B.Sc. (Honours) in Geology</h3><span class="when">2020 to 2023</span></div>
+          <div class="where">University of Delhi, India</div>
+          <ul>
+            <li><b>Courses:</b> Geochemistry, Petrology, Palaeontology</li>
+            <li><b>Lab experience:</b> Remote Sensing &amp; GIS, Petrology</li>
+            <li>CGPA 9.203 / 10</li>
+          </ul>
+        </article>
+
+        <article class="entry">
+          <div class="meta"><h3>Grade 12</h3><span class="when">2018 to 2020</span></div>
+          <div class="where">CKMNSS Senior Secondary School, Chalakudy, Kerala</div>
+          <ul><li>CGPA 9.54 / 10</li></ul>
+        </article>
+
+        <article class="entry">
+          <div class="meta"><h3>Grade 10</h3><span class="when">2018</span></div>
+          <div class="where">Little Flower Public School, Muringoor, Kerala</div>
+          <ul><li>CGPA 10 / 10</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== 03 EXPERIENCE & FIELD ========== -->
+    <section class="panel" id="experience" role="tabpanel">
+      <div class="kicker">03</div>
+      <h2>Experience &amp; Field Training</h2>
+      <div class="rule"></div>
+
+      <div class="sub">Field Training &amp; Summer Schools</div>
+      <div class="entries">
+        <article class="entry">
+          <div class="meta"><h3>Summer School on Biosignatures and the Search for Life on Mars</h3><span class="when">2026</span></div>
+          <div class="where">Iceland</div>
+          <p>Fieldwork in Mars-analogue volcanic terrain, alongside presenting my PhD poster on graphite biogenicity.</p>
+          <div class="gallery">
+            <figure class="ph tall"><img src="images/field-iceland.jpg" alt="Gouri in a green rain jacket in volcanic terrain in Iceland" style="object-position:50% 25%"></figure>
+            <div class="ph tall">Photo</div><div class="ph tall">Photo</div>
+          </div>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>RED Astrobiology Summer School</h3><span class="when">2025</span></div>
+          <div class="where">Rencontres Exobiologiques pour Doctorants · Bordeaux, France</div>
+          <p>Hands-on workshops in geology and meteorite studies, a film night with discussion, an excursion to the Dune du Pilat, and student project presentations to close the week.</p>
+          <div class="gallery"><div class="ph">Photo</div><div class="ph">Photo</div><div class="ph">Photo</div></div>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>Field Training in Dorset and Wales</h3><span class="when">2025</span></div>
+          <div class="where">United Kingdom</div>
+          <div class="gallery"><div class="ph">Photo</div><div class="ph">Photo</div><div class="ph">Photo</div></div>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>Field Training in Almora, Kumaon Himalaya</h3><span class="when">2020 to 2023</span></div>
+          <div class="where">Uttarakhand, India</div>
+          <div class="gallery"><div class="ph">Photo</div><div class="ph">Photo</div><div class="ph">Photo</div></div>
+        </article>
+      </div>
+
+      <div class="sub">Experience</div>
+      <div class="entries">
+        <article class="entry">
+          <div class="meta"><h3>Intern</h3><span class="when">2023</span></div>
+          <div class="where"><a href="https://christcollegeijk.edu.in/departments/aided/Geology-and-Env-Science" target="_blank" rel="noopener">Dept. of Geology &amp; Environmental Science, Christ College Irinjalakuda</a>, Kerala</div>
+          <p>Worked on the basics of remote sensing and GIS in ArcGIS 10.8.</p>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>Volunteer</h3><span class="when">2022</span></div>
+          <div class="where"><a href="https://insaindia.res.in/" target="_blank" rel="noopener">Indian National Science Academy</a>, New Delhi</div>
+          <p>Took part in group discussions on geoheritage conservation and geoethics, and helped the organising committee run the event.</p>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>Content Strategist Intern</h3><span class="when">2021</span></div>
+          <div class="where">Marketing, <a href="https://spaceonova.com/" target="_blank" rel="noopener">SPACEONOVA</a>, New Delhi</div>
+          <p>Created posts and reels on space science.</p>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>Volunteer</h3><span class="when">2021</span></div>
+          <div class="where"><a href="https://www.positron.foundation/soe-cusat" target="_blank" rel="noopener">Positron Foundation for Science and Innovation</a>, CITTIC, CUSAT, Kochi</div>
+          <p>Supported an online workshop for high school students: assignment preparation, evaluation and session logistics.</p>
+        </article>
+        <article class="entry">
+          <div class="meta"><h3>Other Volunteering &amp; Student Chapters</h3></div>
+          <ul>
+            <li>Geology Mentor, Virtual Analog Space Mission, Astrocapsule India (2022 to 2023)</li>
+            <li>Social Media &amp; PR Head, Terre-X Geological Society (2021 to 2022)</li>
+            <li>Volunteer, Koode, the Kerala chapter of Myra-ek Pahal, offering online supplementary education to under-privileged school students (2021)</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== 04 CONFERENCES ========== -->
+    <section class="panel" id="conferences" role="tabpanel">
+      <div class="kicker">04</div>
+      <h2>Conferences &amp; Presentations</h2>
+      <div class="rule"></div>
+      <div class="cards">
+        <div class="card feature">
+          <div class="shot"><img src="images/poster-iceland.jpg" alt="Gouri presenting her poster on graphite biogenicity"></div>
+          <div>
+            <span class="when">2026 · Iceland</span>
+            <h3>Revisiting Earth's Early Life Debates: A Multi-Proxy Approach to Graphite Biogenicity</h3>
+            <p class="authors">Gouripriya Sreekumar Menon, Minik Rosing, Tue Hassenkam</p>
+            <p>Presented at the Summer School on Biosignatures and the Search for Life on Mars. The poster sets out how morphological, isotopic and chemical techniques can be combined to tell biogenic graphite apart from graphite formed without life, using samples from the Isua Supracrustal Belt.</p>
+            <span class="tag">Poster</span>
+          </div>
+        </div>
+        <div class="card">
+          <span class="when">October 2025</span>
+          <h3>EANA Conference</h3>
+          <p>Abstract accepted and travel grant awarded at the European Astrobiology Network Association conference.</p>
+          <span class="tag">Abstract · Travel grant</span>
+        </div>
+        <div class="card">
+          <span class="when">January 2025</span>
+          <h3>UKPF Early Career Meeting</h3>
+          <p>University of Oxford, United Kingdom.</p>
+          <span class="tag">Attended</span>
+        </div>
+        <div class="card">
+          <span class="when">2023</span>
+          <h3>Venusian Habitability and Contingency of Life</h3>
+          <p>Venus Science Conference, Physical Research Laboratory (PRL), India. Online.</p>
+          <span class="tag">Talk</span>
+        </div>
+        <div class="card">
+          <span class="when">2022</span>
+          <h3>Causes of the K-T Extinction Event</h3>
+          <p>Paleontological Society of India, North Zone. Second place for poster presentation.</p>
+          <span class="tag">Poster · 2nd place</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 05 AWARDS ========== -->
+    <section class="panel" id="awards" role="tabpanel">
+      <div class="kicker">05</div>
+      <h2>Awards &amp; Achievements</h2>
+      <div class="rule"></div>
+      <div class="cards">
+        <div class="card">
+          <span class="when">2023 to 2025</span>
+          <h3>Erasmus Mundus Scholarship</h3>
+          <p>Awarded by the European Union to pursue a joint master's degree in Europe.</p>
+        </div>
+        <div class="card">
+          <span class="when">2023</span>
+          <h3>L. Austin Weeks Memorial Grant</h3>
+          <p>American Association of Petroleum Geologists (AAPG).</p>
+        </div>
+        <div class="card">
+          <span class="when">2020 to 2023</span>
+          <h3>Academic Excellence Award</h3>
+          <p>Ranked in the top three of the B.Sc. Geology programme for three consecutive years.</p>
+        </div>
+        <div class="card">
+          <span class="when">2020 to 2023</span>
+          <h3>Central Sector Scholarship</h3>
+          <p>Department of Higher Education, Ministry of Human Resource Development (MHRD), Government of India.</p>
+        </div>
+        <div class="card">
+          <span class="when">&nbsp;</span>
+          <h3>Cultural Laureate Award</h3>
+          <p>For excellence in extracurricular activities.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 06 LISTS ========== -->
+    <section class="panel" id="lists" role="tabpanel">
+      <div class="kicker">06</div>
+      <h2>Lists</h2>
+      <div class="rule"></div>
+      <p class="muted">A growing collection of things worth keeping track of.</p>
+
+      <div class="list-block">
+        <div class="sub">Reading List</div>
+        <!-- To add a book, copy this line and fill it in:
+             <li><span><span class="title">Book title</span><br><span class="by">Author</span></span><span class="when">2026</span></li>
+             Then delete the "empty" line below. -->
+        <ul class="booklist">
+          <li class="empty">Coming soon.</li>
+        </ul>
+      </div>
+
+      <!-- Add more lists later by copying the whole "list-block" div above and changing the heading. -->
+    </section>
+  </main>
+</div>
+
+<script>
+/* ============ RAIL TOGGLE ============ */
+const rt = document.getElementById('railToggle');
+try{ if(localStorage.getItem('rail')==='closed') document.body.classList.add('collapsed'); }catch(e){}
+function setRailLabel(){
+  const c = document.body.classList.contains('collapsed');
+  rt.setAttribute('aria-label', c ? 'Expand menu' : 'Collapse menu'); rt.title = c ? 'Expand menu' : 'Collapse menu';
+}
+setRailLabel();
+rt.addEventListener('click',()=>{
+  document.body.classList.toggle('collapsed'); setRailLabel();
+  try{ localStorage.setItem('rail', document.body.classList.contains('collapsed') ? 'closed' : 'open'); }catch(e){}
+});
+
+/* ============ TABS ============ */
+const tabs = [...document.querySelectorAll('.tab')];
+const panels = [...document.querySelectorAll('.panel')];
+function show(id, animate){
+  if(!document.getElementById(id)) id = 'home';
+  tabs.forEach(t=>{
+    const on = t.dataset.tab === id;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', on);
+    if(on && animate){ t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop'); }
+  });
+  panels.forEach(p=>p.classList.toggle('show', p.id === id));
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  history.replaceState(null,'','#'+t.dataset.tab);
+  show(t.dataset.tab, true);
+}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1), true));
+show(location.hash.slice(1) || 'home', true);
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ============ SKY: stars, constellations, graphite lattices, early Earth ============ */
+(() => {
+  const c = document.getElementById('sky'), x = c.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, dpr, stars = [], groups = [], sparks = [], shooters = [];
+  const rand = (a,b)=>a+Math.random()*(b-a);
+  const now = ()=>performance.now()/1000;
+
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = innerWidth; H = innerHeight;
+    c.width = W*dpr; c.height = H*dpr; x.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.round(W*H/5200);
+    stars = Array.from({length:n},()=>({
+      x:rand(0,W), y:rand(0,H), r:rand(.25,1.25), z:rand(.2,1),
+      tw:rand(0,6.28), ts:rand(.6,1.8), gold:Math.random()<.12
+    }));
+    const count = W < 700 ? 3 : 5;
+    groups = Array.from({length:count},(_,i)=>makeGroup(now() + i*3.5 + rand(0,2)));
+    sparks = Array.from({length: W < 700 ? 14 : 28}, ()=>makeSpark(true));
+  }
+
+  /* A constellation is either a star chain or a fragment of graphite's hexagonal lattice */
+  function makeGroup(start){
+    const cx = rand(W*.08, W*.92), cy = rand(H*.08, H*.7);
+    let pts = [], links = [];
+    if(Math.random() < .45){
+      // graphite: 1 to 3 fused hexagons
+      const L = rand(22,34), rot = rand(0,Math.PI), cells = Math.floor(rand(1,4));
+      const key = p=>Math.round(p.x)+','+Math.round(p.y), idx = {};
+      const add = p=>{const k=key(p); if(idx[k]===undefined){idx[k]=pts.length; pts.push(p);} return idx[k];};
+      const centres = [[0,0],[1.5*L, Math.sqrt(3)/2*L],[1.5*L,-Math.sqrt(3)/2*L],[0,Math.sqrt(3)*L]].slice(0,cells);
+      const seen = new Set();
+      centres.forEach(([ox,oy])=>{
+        const v = [];
+        for(let k=0;k<6;k++){
+          const a = Math.PI/3*k;
+          const px = ox + L*Math.cos(a), py = oy + L*Math.sin(a);
+          v.push(add({x: cx + px*Math.cos(rot) - py*Math.sin(rot), y: cy + px*Math.sin(rot) + py*Math.cos(rot)}));
+        }
+        for(let k=0;k<6;k++){
+          const a=v[k], b=v[(k+1)%6], id=Math.min(a,b)+'-'+Math.max(a,b);
+          if(!seen.has(id)){seen.add(id); links.push([a,b]);}
+        }
+      });
+      return {pts, links, start, dur:rand(16,24), vx:rand(-.03,.03), vy:rand(-.02,.02), hex:true};
+    }
+    const spread = rand(70,140), k = Math.floor(rand(5,8));
+    let px = cx, py = cy;
+    for(let i=0;i<k;i++){ px += rand(-spread,spread)*.6; py += rand(-spread,spread)*.5; pts.push({x:px,y:py}); }
+    links = pts.slice(1).map((_,i)=>[i,i+1]);
+    if(k>4) links.push([1,k-1]);
+    return {pts, links, start, dur:rand(14,22), vx:rand(-.04,.04), vy:rand(-.03,.03), hex:false};
+  }
+
+  /* Tiny sparks rising from the early-Earth horizon, like a hydrothermal vent */
+  function makeSpark(anywhere){
+    return {
+      x: rand(W*.35, W*1.02),
+      y: anywhere ? rand(H*.55, H) : H + rand(0,30),
+      vy: -rand(.12,.32), ph: rand(0,6.28), r: rand(.6,1.6),
+      teal: Math.random() < .6
+    };
+  }
+
+  function drawHorizon(){
+    // a faint curved limb of a young planet at the bottom of the screen
+    const R = Math.max(W,H)*1.15, cx = W*.72, cy = H + R*.93;
+    const glow = x.createRadialGradient(cx,cy,R*.985,cx,cy,R*1.06);
+    glow.addColorStop(0,'rgba(79,179,169,0)');
+    glow.addColorStop(.25,'rgba(79,179,169,.10)');
+    glow.addColorStop(.45,'rgba(212,175,55,.06)');
+    glow.addColorStop(1,'rgba(212,175,55,0)');
+    x.fillStyle = glow;
+    x.beginPath(); x.arc(cx,cy,R*1.06,0,6.283); x.fill();
+    x.fillStyle = 'rgba(3,6,12,.85)';
+    x.beginPath(); x.arc(cx,cy,R,0,6.283); x.fill();
+    x.strokeStyle = 'rgba(241,220,154,.16)'; x.lineWidth = 1;
+    x.beginPath(); x.arc(cx,cy,R,Math.PI*1.25,Math.PI*1.75); x.stroke();
+  }
+
+  function draw(){
+    const t = now();
+    x.clearRect(0,0,W,H);
+
+    for(const s of stars){
+      if(!reduce){ s.x += .035*s.z; s.y += .012*s.z; if(s.x>W+2) s.x=-2; if(s.y>H+2) s.y=-2; }
+      const a = .35 + .55*Math.abs(Math.sin(t*s.ts + s.tw))*s.z;
+      x.beginPath(); x.arc(s.x,s.y,s.r,0,6.283);
+      x.fillStyle = s.gold ? `rgba(241,220,154,${a})` : `rgba(235,235,245,${a*.85})`;
+      x.fill();
+    }
+
+    groups.forEach((g,gi)=>{
+      const local = t - g.start;
+      if(local < 0) return;
+      if(local > g.dur){ groups[gi] = makeGroup(t + rand(1,4)); return; }
+      const p = local / g.dur;
+      const fade = p<.25 ? p/.25 : p>.75 ? (1-p)/.25 : 1;
+      if(!reduce) g.pts.forEach(pt=>{pt.x+=g.vx; pt.y+=g.vy;});
+      const drawn = Math.min(1, p/.3);
+      x.lineWidth = g.hex ? .8 : .7;
+      g.links.forEach(([a,b],i)=>{
+        const f = Math.max(0, Math.min(1, drawn*g.links.length - i));
+        if(f<=0) return;
+        const A=g.pts[a], B=g.pts[b];
+        x.strokeStyle = g.hex ? `rgba(120,200,190,${.22*fade})` : `rgba(212,175,55,${.28*fade})`;
+        x.beginPath(); x.moveTo(A.x,A.y); x.lineTo(A.x+(B.x-A.x)*f, A.y+(B.y-A.y)*f); x.stroke();
+      });
+      g.pts.forEach(pt=>{
+        x.beginPath(); x.arc(pt.x,pt.y,g.hex?1.3:1.6,0,6.283);
+        x.fillStyle = `rgba(241,220,154,${.85*fade})`; x.fill();
+        x.beginPath(); x.arc(pt.x,pt.y,4.5,0,6.283);
+        x.fillStyle = `rgba(212,175,55,${.07*fade})`; x.fill();
+      });
+    });
+
+    drawHorizon();
+
+    sparks.forEach((s,i)=>{
+      if(!reduce){ s.y += s.vy; s.x += Math.sin(t*.8 + s.ph)*.12; }
+      const life = Math.max(0, Math.min(1, (s.y - H*.35)/(H*.5)));
+      if(life <= 0){ sparks[i] = makeSpark(false); return; }
+      const a = .55*life*(.6+.4*Math.sin(t*2+s.ph));
+      x.beginPath(); x.arc(s.x,s.y,s.r,0,6.283);
+      x.fillStyle = s.teal ? `rgba(120,210,200,${a})` : `rgba(241,220,154,${a})`;
+      x.fill();
+    });
+
+    if(!reduce && Math.random() < .0018 && shooters.length < 1){
+      shooters.push({x:rand(W*.2,W), y:rand(0,H*.4), vx:-rand(5,8), vy:rand(2,3.5), life:1});
+    }
+    shooters = shooters.filter(s=>{
+      s.x+=s.vx; s.y+=s.vy; s.life-=.018;
+      const gr = x.createLinearGradient(s.x,s.y,s.x-s.vx*12,s.y-s.vy*12);
+      gr.addColorStop(0,`rgba(241,220,154,${.7*s.life})`); gr.addColorStop(1,'rgba(241,220,154,0)');
+      x.strokeStyle = gr; x.lineWidth = 1.1;
+      x.beginPath(); x.moveTo(s.x,s.y); x.lineTo(s.x-s.vx*12,s.y-s.vy*12); x.stroke();
+      return s.life>0;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  addEventListener('resize', resize);
+  resize(); requestAnimationFrame(draw);
+})();
+
+</script>
+</body>
+</html>
