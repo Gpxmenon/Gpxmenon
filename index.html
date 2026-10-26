@@ -258,10 +258,28 @@
   .figs .wide img{width:58%;aspect-ratio:16/9;flex:none}
   .figs .wide figcaption{font-size:13px;padding:16px 18px;align-self:center}
   .figs .wide b{color:var(--gold-pale);font-weight:normal;font-family:var(--font-head);font-size:16px;display:block;margin-bottom:6px}
-  .tag.review{color:var(--gold-pale);border-color:rgba(241,220,154,.5);background:rgba(212,175,55,.08)}
   .tag.live{color:var(--teal);border-color:rgba(79,179,169,.45)}
   #projects .cards+.sub,#projects .project+.sub{margin-top:56px}
   @media (max-width:700px){.project{padding:20px 18px}.project h3{font-size:22px}.figs .wide{flex-direction:column}.figs .wide img{width:100%}.banner img{aspect-ratio:2/1}}
+
+  /* A single faint Mars drifting high in the sky */
+  .planet{position:fixed;z-index:0;top:11%;right:8%;width:74px;height:74px;pointer-events:none;opacity:.5;
+    animation:drift 140s ease-in-out infinite alternate}
+  .planet .body{position:absolute;inset:0;border-radius:50%;overflow:hidden;
+    background:
+      radial-gradient(circle at 70% 62%, rgba(90,30,15,.55) 0 9%, transparent 10%),
+      radial-gradient(ellipse 38% 14% at 40% 46%, rgba(80,28,14,.45), transparent 70%),
+      radial-gradient(ellipse 20% 9% at 50% 8%, rgba(255,240,225,.5), transparent 70%),
+      radial-gradient(circle at 34% 30%, #e79a62 0%, #c1653a 38%, #7d3420 70%, #3a160d 100%);
+    box-shadow:inset -16px -12px 26px rgba(2,3,10,.92), inset 3px 3px 10px rgba(255,200,150,.18)}
+  .planet .body::after{content:"";position:absolute;inset:-20%;
+    background:repeating-linear-gradient(170deg, transparent 0 7px, rgba(60,20,10,.12) 7px 9px);
+    animation:spin 260s linear infinite}
+  .planet::before{content:"";position:absolute;inset:-7px;border-radius:50%;
+    background:radial-gradient(circle, transparent 54%, rgba(231,154,98,.16) 62%, transparent 72%)}
+  @keyframes drift{from{transform:translate(0,0)}to{transform:translate(-46px,22px)}}
+  @keyframes spin{to{transform:translateX(-30%)}}
+  @media (max-width:860px){.planet{width:46px;height:46px;top:7%;right:7%;opacity:.42}}
 
   /* Lists */
   .list-block{margin-bottom:46px}
@@ -333,6 +351,7 @@
 <body>
 
 <canvas id="sky" aria-hidden="true"></canvas>
+<div class="planet" aria-hidden="true"><div class="body"></div></div>
 <div class="veil"></div>
 
 <div class="shell">
@@ -629,12 +648,6 @@
           <h3>Graphite Biogenicity Review: Isua</h3>
           <p>A review of the evidence for and against a biological origin of graphite in the Isua Supracrustal Belt, Greenland.</p>
           <span class="tag live">In progress</span>
-        </div>
-        <div class="card">
-          <span class="when">From the master's thesis</span>
-          <h3>Siljan Fungi Manuscript</h3>
-          <p>The Siljan hydrocarbon-degrading fungi work, written up as a manuscript and submitted for publication.</p>
-          <span class="tag review">Under review</span>
         </div>
       </div>
 
