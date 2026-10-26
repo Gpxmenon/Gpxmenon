@@ -237,6 +237,17 @@
   .card.feature .authors{color:var(--text);font-size:13px}
   @media (max-width:700px){.card.feature{grid-template-columns:1fr}.card.feature .shot{max-width:320px}}
 
+
+  /* Collapsible project */
+  .proj-toggle{margin-top:16px;display:inline-flex;align-items:center;gap:10px;background:transparent;color:var(--gold-pale);
+    border:1px solid rgba(212,175,55,.45);border-radius:999px;padding:7px 18px;font:inherit;font-size:14px;letter-spacing:.5px;cursor:pointer;
+    transition:background .3s,border-color .3s,transform .2s}
+  .proj-toggle:hover{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.8);transform:translateY(-1px)}
+  .proj-toggle .chev{display:inline-block;line-height:1;transform:translateY(-3px);transition:transform .4s ease}
+  .proj-toggle[aria-expanded="true"] .chev{transform:translateY(3px) rotate(180deg)}
+  .proj-body{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .6s ease,opacity .5s ease}
+  .proj-body.open{grid-template-rows:1fr;opacity:1}
+  .proj-inner{overflow:hidden;min-height:0}
   /* Projects */
   .project{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 30px 30px}
   .project .when{display:block;font-size:14px;margin-bottom:6px}
@@ -655,6 +666,10 @@
         <span class="when">2025 · Siljan impact crater, Sweden</span>
         <h3>Bioprospecting for Hydrocarbon-Degrading Microorganisms at the Siljan Impact Crater</h3>
         <div class="where">Swedish Museum of Natural History, Stockholm · supervised by Dr. Magnus Ivarsson</div>
+        <button class="proj-toggle" type="button" aria-expanded="false">
+          <span class="lbl">Read more</span><span class="chev" aria-hidden="true">&#8964;</span>
+        </button>
+        <div class="proj-body"><div class="proj-inner">
 
         <!-- Photos are served from the public Notion page. To host a copy here instead,
              put the file in the images folder and change the src to "images/filename.jpg". -->
@@ -685,6 +700,7 @@
           <figure><img src="https://gpxmenon.notion.site/image/attachment%3A69132065-63e2-4fea-a6f0-dae9572ac6b3%3Aimage.png?table=block&amp;id=295f61d0-2dcf-803b-a558-ff2ada62b0f8&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1400&amp;cache=v2" alt="Results from hexane extraction" loading="lazy"><figcaption>Results from hexane extraction</figcaption></figure>
           <figure class="wide"><img src="https://gpxmenon.notion.site/image/attachment%3Ab7925de1-6738-4da9-8e9c-c77bd2834c07%3Aimage.png?table=block&amp;id=295f61d0-2dcf-80ae-987b-eac36a724de3&amp;spaceId=22ef61d0-2dcf-8156-a25f-0003ab21d033&amp;width=1400&amp;cache=v2" alt="Siljan on Earth compared with Gale Crater on Mars" loading="lazy"><figcaption><b>Siljan and Gale Crater compared.</b> At Siljan, the impact matured the shale and released oil that fungi use, producing hydrogen and CO₂ under anaerobic conditions, which methanogens turn into methane through the hydrogenotrophic pathway. On Mars, organics delivered by meteorites, or preserved kerogen if life ever existed, could feed heterotrophs that in turn support methanogens. The methane could collect in clathrates and be released later, which may explain the methane spikes seen there.</figcaption></figure>
         </div>
+        </div></div>
       </article>
 
       <div class="sub">Current Work</div>
@@ -1139,6 +1155,17 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   resize(); requestAnimationFrame(draw);
 })();
 
+</script>
+
+<script>
+document.querySelectorAll('.proj-toggle').forEach(function(b){
+  b.addEventListener('click',function(){
+    var body=b.nextElementSibling, open=body.classList.toggle('open');
+    b.setAttribute('aria-expanded',open);
+    b.querySelector('.lbl').textContent=open?'Show less':'Read more';
+    if(!open) b.closest('.project').scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+});
 </script>
 </body>
 </html>
