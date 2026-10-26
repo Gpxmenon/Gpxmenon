@@ -1190,108 +1190,122 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
 </script>
 
 <script>
-/* ============ COSMIC SOUND (generated live, no audio file) ============ */
+/* ============ COSMIC SOUND ============
+   The tune is composed once, offline, into a seamless 48 s loop, then simply
+   played back. Playback is a single looping buffer, so there is almost no
+   work for the device to do while it plays, and no crackling. */
 (() => {
   const btn = document.getElementById('soundToggle'); if(!btn) return;
   const lbl = btn.querySelector('.lbl');
-  let ctx, master, on = false, chimeTimer;
-  const LEVEL = .5;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if(!AC || !OAC){ btn.style.display='none'; return; }
 
-  function build(){
-    const AC = window.AudioContext || window.webkitAudioContext;
-    ctx = new AC({latencyHint:'playback'});
+  const SR = 44100, LOOP = 48, XF = 6, LEVEL = .6;
+  let ctx, gain, loopBuf, rendering, player, on = false;
 
-    // limiter at the very end so nothing can ever clip or crackle
-    const lim = ctx.createDynamicsCompressor();
-    lim.threshold.value = -18; lim.knee.value = 12; lim.ratio.value = 6;
-    lim.attack.value = .05; lim.release.value = .5;
-    lim.connect(ctx.destination);
+  async function compose(){
+    const total = LOOP + XF, oc = new OAC(2, SR*total, SR);
+    const bus = oc.createGain(); bus.gain.value = 1;
 
-    master = ctx.createGain(); master.gain.value = 0; master.connect(lim);
-
-    // smooth hall reverb: dark, slowly decaying impulse
-    const len = ctx.sampleRate * 6, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    // dark, smooth hall reverb
+    const irLen = SR*4, ir = oc.createBuffer(2, irLen, SR);
     for(let ch=0; ch<2; ch++){
       const d = ir.getChannelData(ch); let last = 0;
-      for(let i=0;i<len;i++){ last = last*.96 + (Math.random()*2-1)*.04; d[i] = last*Math.exp(-i/(ctx.sampleRate*1.8))*6; }
+      for(let i=0;i<irLen;i++){ last = last*.95 + (Math.random()*2-1)*.05; d[i] = last*Math.exp(-i/(SR*1.4)); }
     }
-    const rev = ctx.createConvolver(); rev.buffer = ir;
-    const wet = ctx.createGain(); wet.gain.value = .45;
-    const dry = ctx.createGain(); dry.gain.value = .6;
-    const bus = ctx.createGain(); // everything musical goes in here
-    bus.connect(dry); dry.connect(master);
-    bus.connect(rev); rev.connect(wet); wet.connect(master);
+    const rev = oc.createConvolver(); rev.buffer = ir;
+    const wet = oc.createGain(); wet.gain.value = 1.2;
+    bus.connect(oc.destination); bus.connect(rev); rev.connect(wet); wet.connect(oc.destination);
 
-    // warm pad: pure sine tones, gently filtered, no harsh edges
-    const filt = ctx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900; filt.Q.value=.5;
-    filt.connect(bus);
+    // warm pad of pure sine tones (A major)
+    const filt = oc.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900; filt.Q.value=.5; filt.connect(bus);
     [[110,.07],[164.81,.05],[220,.045],[277.18,.03],[329.63,.025]].forEach(([f,v])=>{
-      [-2.5,2.5].forEach(det=>{
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.value = f; o.detune.value = det;
-        g.gain.value = v;
-        // very slow, shallow swell so the pad breathes without wobbling
-        const sw = ctx.createOscillator(), swg = ctx.createGain();
-        sw.frequency.value = .015 + Math.random()*.02; swg.gain.value = v*.35;
-        sw.connect(swg); swg.connect(g.gain); sw.start();
-        o.connect(g); g.connect(filt); o.start();
+      [-2,2].forEach(det=>{
+        const o = oc.createOscillator(), g = oc.createGain();
+        o.frequency.value = f; o.detune.value = det; g.gain.value = v;
+        const sw = oc.createOscillator(), swg = oc.createGain();
+        sw.frequency.value = 1/(12 + Math.random()*24); swg.gain.value = v*.35;
+        sw.connect(swg); swg.connect(g.gain); sw.start(0);
+        o.connect(g); g.connect(filt); o.start(0);
       });
     });
 
-    // chimes get their own soft filter so they glow rather than ping
-    chimeBus = ctx.createBiquadFilter(); chimeBus.type='lowpass'; chimeBus.frequency.value=2400; chimeBus.Q.value=.5;
-    chimeBus.connect(bus);
-  }
-  let chimeBus;
+    // soft star chimes, A major pentatonic
+    const notes = [440,493.88,554.37,659.25,739.99,880,987.77,1108.73];
+    const cf = oc.createBiquadFilter(); cf.type='lowpass'; cf.frequency.value=2200; cf.Q.value=.5; cf.connect(bus);
+    for(let t = 2; t < total - 6; t += 3 + Math.random()*4){
+      const o = oc.createOscillator(), g = oc.createGain();
+      o.frequency.value = notes[Math.floor(Math.random()*notes.length)];
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.03,t+.4); g.gain.setTargetAtTime(0,t+.4,1.1);
+      o.connect(g);
+      if(oc.createStereoPanner){ const pn = oc.createStereoPanner(); pn.pan.value = Math.random()*1.2-.6; g.connect(pn); pn.connect(cf); }
+      else g.connect(cf);
+      o.start(t); o.stop(Math.min(total, t+7));
+    }
 
-  // twinkling star chimes on a pentatonic scale (A major pentatonic)
-  const notes = [440,493.88,554.37,659.25,739.99,880,987.77,1108.73];
-  function chime(){
-    if(!on) return;
-    const t = ctx.currentTime + .05, f = notes[Math.floor(Math.random()*notes.length)];
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type='sine'; o.frequency.value=f;
-    g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(.03,t+.35);        // soft swell in, no click
-    g.gain.setTargetAtTime(0,t+.35,1.2);              // long natural fade
-    o.connect(g);
-    if(ctx.createStereoPanner){ const p=ctx.createStereoPanner(); p.pan.value=Math.random()*1.2-.6; g.connect(p); p.connect(chimeBus); }
-    else g.connect(chimeBus);
-    o.start(t); o.stop(t+8);
-    chimeTimer = setTimeout(chime, 3000 + Math.random()*5000);
+    const raw = await oc.startRendering();
+
+    // fold the extra tail back over the start so the loop has no seam,
+    // then scale so the loudest point sits well below clipping
+    const n = SR*LOOP, x = SR*XF, out = new AudioBuffer({length:n, numberOfChannels:2, sampleRate:SR});
+    let peak = 0;
+    const chans = [0,1].map(ch=>{
+      const src = raw.getChannelData(ch), dst = new Float32Array(n);
+      for(let i=0;i<n;i++){
+        let v = src[i];
+        if(i < x){ const k = i/x; v = src[i]*Math.sin(k*Math.PI/2) + src[n+i]*Math.cos(k*Math.PI/2); }
+        dst[i] = v; const a = Math.abs(v); if(a>peak) peak = a;
+      }
+      return dst;
+    });
+    const scale = peak > 0 ? .5/peak : 1;
+    chans.forEach((d,ch)=>{ for(let i=0;i<n;i++) d[i]*=scale; out.copyToChannel(d,ch); });
+    return out;
   }
 
   function fadeTo(v, secs){
     const t = ctx.currentTime;
-    master.gain.cancelScheduledValues(t);
-    master.gain.setValueAtTime(master.gain.value, t);
-    master.gain.setTargetAtTime(v, t, secs/3);
+    gain.gain.cancelScheduledValues(t);
+    gain.gain.setValueAtTime(gain.gain.value, t);
+    gain.gain.setTargetAtTime(v, t, secs/3);
   }
 
-  function setUI(){
+  function setUI(text){
     btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on);
     btn.setAttribute('aria-label', on ? 'Pause cosmic ambient sound' : 'Play cosmic ambient sound');
-    lbl.textContent = on ? 'Sound on' : 'Sound off';
+    lbl.textContent = text || (on ? 'Sound on' : 'Sound off');
   }
 
-  btn.addEventListener('click', async () => {
-    if(!ctx) build();
-    on = !on; setUI();
-    clearTimeout(chimeTimer);
-    if(on){
-      await ctx.resume(); fadeTo(LEVEL, 4); chimeTimer = setTimeout(chime, 2500);
-    } else {
-      fadeTo(0, 2);
-      setTimeout(()=>{ if(!on) ctx.suspend(); }, 2600);
+  async function start(){
+    if(!ctx){
+      ctx = new AC({latencyHint:'playback'});
+      gain = ctx.createGain(); gain.gain.value = 0; gain.connect(ctx.destination);
     }
+    await ctx.resume();
+    if(!loopBuf){
+      setUI('Tuning…');
+      loopBuf = await (rendering || (rendering = compose()));
+      if(!on) return;
+      setUI();
+    }
+    if(!player){
+      player = ctx.createBufferSource();
+      player.buffer = loopBuf; player.loop = true; player.connect(gain); player.start();
+    }
+    fadeTo(LEVEL, 4);
+  }
+
+  btn.addEventListener('click', () => {
+    on = !on; setUI();
+    if(on) start();
+    else if(ctx){ fadeTo(0, 2); setTimeout(()=>{ if(!on) ctx.suspend(); }, 2600); }
   });
 
-  // fade out quietly when the tab is hidden, fade back in on return
   document.addEventListener('visibilitychange', async () => {
-    if(!ctx || !on) return;
-    clearTimeout(chimeTimer);
+    if(!ctx || !on || !loopBuf) return;
     if(document.hidden){ fadeTo(0, 1); setTimeout(()=>{ if(document.hidden) ctx.suspend(); }, 1300); }
-    else { await ctx.resume(); fadeTo(LEVEL, 3); chimeTimer = setTimeout(chime, 2000); }
+    else { await ctx.resume(); fadeTo(LEVEL, 3); }
   });
 })();
 </script>
