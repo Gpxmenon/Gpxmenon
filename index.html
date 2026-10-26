@@ -6,13 +6,16 @@
 <title>Gouripriya S. Menon</title>
 <meta name="description" content="Gouripriya S. Menon, PhD student in astrobiology at the University of Copenhagen. Early life, graphite biogenicity and the Isua Supracrustal Belt.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23000'/><path d='M50 14 L58 42 L86 50 L58 58 L50 86 L42 58 L14 50 L42 42 Z' fill='%23d4af37'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   /* ============ THEME ============
-     Fonts: headings in Times New Roman, body in Verdana.
-     To use one font everywhere, set both variables to the same value. */
+     Fonts: headings in Cormorant Garamond, body in Jost (both from Google Fonts),
+     with Times New Roman and Verdana as fallbacks. */
   :root{
-    --font-head: "Times New Roman", Times, Georgia, serif;
-    --font-body: Verdana, Geneva, Tahoma, sans-serif;
+    --font-head: "Cormorant Garamond", "Times New Roman", Times, Georgia, serif;
+    --font-body: "Jost", Verdana, Geneva, Tahoma, sans-serif;
     --bg: #04060d;
     --panel: rgba(8, 11, 22, 0.72);
     --gold: #d4af37;
@@ -326,6 +329,55 @@
   .list-title{font-size:30px;margin:22px 0 26px}
   .cat{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 9px;white-space:nowrap}
   .empty{color:var(--muted);font-style:italic;font-size:13.5px;padding:16px 4px;border-bottom:1px solid var(--line)}
+
+  /* ============ THEME UPGRADE: type scale, motion, glow ============ */
+  body{font-size:15.5px;letter-spacing:.15px}
+  h1{font-size:clamp(46px,6.2vw,76px);font-weight:500;letter-spacing:.3px}
+  h2{font-size:clamp(38px,4.6vw,54px);font-weight:500}
+  h3{font-size:24px;font-weight:500}
+  .brand{font-size:34px;font-weight:500}
+  .when{font-size:18px;font-style:italic}
+  .sub{font-size:30px;font-weight:500}
+  .card h3{font-size:23px}
+  .card .when{font-size:16px}
+  .project h3{font-size:31px}
+  .book .title{font-size:21px;font-weight:500}
+  .f-name{font-size:27px;font-weight:500}
+  .list-title{font-size:34px}
+  .figs .wide b{font-size:19px}
+  .mobile-brand{font-size:26px}
+  .tab .num{font-size:15px}
+  .lead{font-size:16.5px;font-weight:300}
+  .kicker{font-weight:500}
+
+  /* Gold shimmer on the main heading */
+  h1{background:linear-gradient(100deg,#b8963a 0%,#f1dc9a 30%,#fff6d8 45%,#f1dc9a 60%,#b8963a 100%);background-size:250% 100%;
+     -webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 9s ease-in-out infinite}
+  @keyframes shimmer{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+
+  /* Home intro: lines arrive one after another */
+  .panel.show .hero > div > *{animation:lineIn .9s cubic-bezier(.2,.7,.2,1) both}
+  .panel.show .hero > div > *:nth-child(2){animation-delay:.08s}
+  .panel.show .hero > div > *:nth-child(3){animation-delay:.16s}
+  .panel.show .hero > div > *:nth-child(4){animation-delay:.26s}
+  .panel.show .hero > div > *:nth-child(5){animation-delay:.36s}
+  .panel.show .hero > div > *:nth-child(6){animation-delay:.46s}
+  .panel.show .hero > div > *:nth-child(7){animation-delay:.56s}
+  .panel.show .hero > div > *:nth-child(n+8){animation-delay:.66s}
+  @keyframes lineIn{from{opacity:0;transform:translateY(14px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+
+  /* Scroll reveal */
+  .js-reveal .rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease var(--d,0s), transform .8s cubic-bezier(.2,.7,.2,1) var(--d,0s), border-color .35s, box-shadow .35s, background-color .3s, padding-left .3s}
+  .js-reveal .rv.in{opacity:1;transform:none}
+  .js-reveal .card.rv.in:hover{transform:translateY(-4px)}
+  .js-reveal .folder.rv.in:hover{transform:translateY(-5px)}
+  .js-reveal .folder.rv{transition-timing-function:ease, cubic-bezier(.34,1.56,.64,1)}
+
+  /* Soft gold light that follows the pointer inside cards */
+  .card,.project,.folder{background-image:radial-gradient(360px circle at var(--mx,-500px) var(--my,-500px), rgba(212,175,55,.09), transparent 65%)}
+  .card,.project{background-color:var(--panel)}
+
+  @media (prefers-reduced-motion: reduce){ .js-reveal .rv{opacity:1;transform:none} h1{animation:none} }
 
   /* ============ MOBILE ============ */
   @media (max-width: 860px){
@@ -872,6 +924,22 @@ document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',(
   history.replaceState(null,'','#lists'); openList(null);
 }));
 
+/* ============ SCROLL REVEAL + CARD GLOW ============ */
+(() => {
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  document.documentElement.classList.add('js-reveal');
+  const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ const el=e.target; el.classList.add('in'); io.unobserve(el); setTimeout(()=>el.style.setProperty('--d','0s'),1500); } }),{rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.entry, .card, .project, .facet, .figs figure, .gallery .ph, .banner, .book, .folder').forEach(el=>{
+    const sib = [...el.parentElement.children].indexOf(el);
+    el.style.setProperty('--d', Math.min(sib,6)*0.07+'s');
+    el.classList.add('rv'); io.observe(el);
+  });
+  document.querySelectorAll('.card, .project, .folder').forEach(el=>el.addEventListener('pointermove',e=>{
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX-r.left)+'px'); el.style.setProperty('--my', (e.clientY-r.top)+'px');
+  }));
+})();
+
 /* ============ TABS ============ */
 const tabs = [...document.querySelectorAll('.tab')];
 const panels = [...document.querySelectorAll('.panel')];
@@ -896,7 +964,7 @@ window.addEventListener('hashchange',()=>show(location.hash.slice(1), true));
 show(location.hash.slice(1) || 'home', true);
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-/* ============ SKY: stars, constellations, graphite lattices, early Earth ============ */
+/* ============ SKY: aurora, stars, constellations, graphite lattices, early Earth ============ */
 (() => {
   const c = document.getElementById('sky'), x = c.getContext('2d');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -977,9 +1045,36 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     x.beginPath(); x.arc(cx,cy,R,Math.PI*1.25,Math.PI*1.75); x.stroke();
   }
 
+  /* Faint Greenland aurora drifting across the top of the sky */
+  function drawAurora(t){
+    const bands = [
+      {base:.16, amp:.05, len:.0028, sp:.05, h:.30, c:[79,179,169], a:.075},
+      {base:.24, amp:.04, len:.0021, sp:-.035, h:.22, c:[120,210,170], a:.05},
+      {base:.11, amp:.03, len:.0035, sp:.06, h:.16, c:[212,175,55], a:.035}
+    ];
+    x.save(); x.globalCompositeOperation = 'lighter';
+    const step = Math.max(6, W/180);
+    for(const b of bands){
+      for(let px=0; px<=W; px+=step){
+        const wave = Math.sin(px*b.len + t*b.sp*6) + .5*Math.sin(px*b.len*2.3 - t*b.sp*4);
+        const y = H*(b.base + b.amp*wave);
+        const pulse = .55 + .45*Math.sin(px*.004 + t*.4 + b.base*20);
+        const edge = Math.min(1, px/(W*.25), (W-px)/(W*.25));
+        const a = b.a*pulse*Math.max(0,edge);
+        if(a<.002) continue;
+        const hh = H*b.h*(.7+.3*pulse);
+        const g = x.createLinearGradient(0,y-hh*.15,0,y+hh);
+        g.addColorStop(0,`rgba(${b.c},0)`); g.addColorStop(.12,`rgba(${b.c},${a})`); g.addColorStop(1,`rgba(${b.c},0)`);
+        x.fillStyle = g; x.fillRect(px, y-hh*.15, step+1, hh*1.15);
+      }
+    }
+    x.restore();
+  }
+
   function draw(){
     const t = now();
     x.clearRect(0,0,W,H);
+    drawAurora(t);
 
     for(const s of stars){
       if(!reduce){ s.x += .035*s.z; s.y += .012*s.z; if(s.x>W+2) s.x=-2; if(s.y>H+2) s.y=-2; }
