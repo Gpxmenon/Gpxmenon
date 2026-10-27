@@ -158,7 +158,7 @@
   .muted{color:var(--muted)}
 
   /* Home */
-  .hero{display:grid;grid-template-columns:1fr 300px;column-gap:56px;row-gap:0;align-items:start}
+  .hero{display:grid;grid-template-columns:1fr 340px;column-gap:48px;row-gap:0;align-items:start}
   .portrait{position:relative;width:260px;aspect-ratio:1;display:grid;place-items:center;margin-top:10px}
   .photo{
     width:78%;aspect-ratio:1;border-radius:50%;overflow:hidden;position:relative;z-index:1;
@@ -182,7 +182,7 @@
   /* Literature graph (from the Obsidian vault), sits under the portrait */
   .hero-text{grid-column:1;grid-row:1 / span 2}
   .portrait{justify-self:center}
-  .lit-graph{grid-column:2;grid-row:2;width:100%;margin-top:6px;text-align:center}
+  .lit-graph{grid-column:2;grid-row:2;width:115%;margin:0 -7.5%;text-align:center}
   .lit-graph .stage{position:relative;width:100%;aspect-ratio:1/1}
   .lit-graph canvas{width:100%;height:100%;display:block;cursor:default;
     -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
@@ -439,7 +439,7 @@
     .hero{grid-template-columns:1fr;gap:30px}
     .portrait{width:190px;order:-1;margin:0 auto 10px}
     .hero-text,.lit-graph{grid-column:1;grid-row:auto}
-    .lit-graph{max-width:340px;justify-self:center;margin-top:10px}
+    .lit-graph{width:100%;max-width:380px;justify-self:center;margin:10px auto 0}
   }
   .mobile-brand{display:none;font-family:var(--font-head);color:var(--gold);font-size:22px;margin-bottom:30px}
 
@@ -1431,7 +1431,7 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
   function size() {
     const b = cv.getBoundingClientRect(); if (!b.width) return;
     W = b.width; H = b.height; cv.width = W * dpr; cv.height = H * dpr;
-    S = Math.min(W, H) * .47 / ext; draw();
+    S = Math.min(W, H) * .5 / ext; draw();
   }
   function pos(p) {
     const c = Math.cos(ang), s = Math.sin(ang);
