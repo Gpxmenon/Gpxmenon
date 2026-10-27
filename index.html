@@ -541,7 +541,6 @@
           <div class="stage"><canvas></canvas><div class="tip"></div></div>
           <figcaption>
             <div class="cap">My growing body of PhD literature</div>
-            <div class="cap-sub" id="litCount"></div>
           </figcaption>
         </figure>
       </div>
@@ -1397,9 +1396,7 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
   if (!G || !fig) { if (fig) fig.style.display = 'none'; return; }
   const cv = fig.querySelector('canvas'), x = cv.getContext('2d'), tip = fig.querySelector('.tip');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const N = G.nodes.length, papers = G.nodes.filter(n => n.k === 'p').length;
-  document.getElementById('litCount').textContent =
-    papers + ' papers · ' + (N - papers) + ' concept notes · ' + G.links.length + ' links';
+  const N = G.nodes.length;
 
   // neighbours and degree
   const nb = G.nodes.map(() => new Set());
