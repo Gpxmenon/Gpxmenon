@@ -1202,7 +1202,30 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
   if(!AC || !OAC){ btn.style.display='none'; return; }
 
   const SR = 44100, LOOP = 48, XF = 6, LEVEL = .6;
-  let ctx, gain, loopBuf, rendering, player, on = false;
+  let ctx, gain, loopBuf, rendering, player, on = false, fromFile = false;
+
+  function ensureCtx(){
+    if(!ctx){
+      ctx = new AC({latencyHint:'playback'});
+      gain = ctx.createGain(); gain.gain.value = 0; gain.connect(ctx.destination);
+    }
+  }
+
+  // the tune is pre-recorded in cosmic.mp3 (rendered once from compose() below,
+  // with 1 s of wrap-around on each side so it loops without a seam).
+  // If the file can't load, it is composed live in the browser instead.
+  function load(){
+    if(!rendering){
+      ensureCtx();
+      rendering = fetch('cosmic.mp3')
+        .then(r => { if(!r.ok) throw 0; return r.arrayBuffer(); })
+        .then(a => new Promise((ok, no) => ctx.decodeAudioData(a, ok, no)))
+        .then(b => { fromFile = true; return b; })
+        .catch(() => compose())
+        .then(b => (loopBuf = b));
+    }
+    return rendering;
+  }
 
   async function compose(){
     const total = LOOP + XF, oc = new OAC(2, SR*total, SR);
@@ -1278,29 +1301,58 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
   }
 
   async function start(){
-    if(!ctx){
-      ctx = new AC({latencyHint:'playback'});
-      gain = ctx.createGain(); gain.gain.value = 0; gain.connect(ctx.destination);
-    }
+    ensureCtx();
     await ctx.resume();
     if(!loopBuf){
-      setUI('Tuning…');
-      loopBuf = await (rendering || (rendering = compose()));
+      await load();
       if(!on) return;
-      setUI();
     }
     if(!player){
       player = ctx.createBufferSource();
-      player.buffer = loopBuf; player.loop = true; player.connect(gain); player.start();
+      player.buffer = loopBuf; player.loop = true;
+      if(fromFile){ player.loopStart = 1; player.loopEnd = 49; } player.connect(gain); player.start(0, fromFile ? 1 : 0);
     }
-    fadeTo(LEVEL, 4);
+    fadeTo(LEVEL, 1.2);
+  }
+
+  // remember a visitor's choice to mute, so it stays off on their next visit
+  let muted = false;
+  try { muted = localStorage.getItem('gpSound') === 'off'; } catch(e){}
+  const remember = v => { try { localStorage.setItem('gpSound', v); } catch(e){} };
+
+  function stop(){
+    on = false; setUI();
+    if(ctx){ fadeTo(0, 1); setTimeout(()=>{ if(!on) ctx.suspend(); }, 1300); }
   }
 
   btn.addEventListener('click', () => {
-    on = !on; setUI();
-    if(on) start();
-    else if(ctx){ fadeTo(0, 2); setTimeout(()=>{ if(!on) ctx.suspend(); }, 2600); }
+    const playing = on && player && ctx.state === 'running';
+    if(playing){ stop(); remember('off'); }
+    else { on = true; setUI(); remember('on'); start(); }
   });
+
+  // pre-render the tune quietly in the background as soon as the page has loaded,
+  // so pressing play (or the first tap) starts the sound straight away
+  const prep = () => { try { load(); } catch(e){} };
+  if('requestIdleCallback' in window) requestIdleCallback(prep, {timeout:1500}); else setTimeout(prep, 600);
+
+  // sound is on by default: browsers only allow audio after the visitor's first
+  // tap, click or key press, so it begins at that moment (the button still mutes it)
+  if(!muted){
+    on = true; setUI();
+    const evs = ['pointerdown','keydown','touchstart'];
+    const unlock = e => {
+      evs.forEach(ev => document.removeEventListener(ev, unlock, true));
+      if(btn.contains(e.target)) return;      // the button handles its own click
+      if(on) start();
+    };
+    evs.forEach(ev => document.addEventListener(ev, unlock, true));
+    // some browsers already allow it (e.g. returning visitors): try right away
+    try {
+      ensureCtx();
+      ctx.resume().then(()=>{ if(ctx.state === 'running' && on) start(); }).catch(()=>{});
+    } catch(e){}
+  }
 
   document.addEventListener('visibilitychange', async () => {
     if(!ctx || !on || !loopBuf) return;
