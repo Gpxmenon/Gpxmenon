@@ -158,7 +158,7 @@
   .muted{color:var(--muted)}
 
   /* Home */
-  .hero{display:grid;grid-template-columns:1fr 270px;gap:56px;align-items:start}
+  .hero{display:grid;grid-template-columns:1fr 300px;column-gap:56px;row-gap:0;align-items:start}
   .portrait{position:relative;width:260px;aspect-ratio:1;display:grid;place-items:center;margin-top:10px}
   .photo{
     width:78%;aspect-ratio:1;border-radius:50%;overflow:hidden;position:relative;z-index:1;
@@ -178,6 +178,23 @@
   .chips{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 30px}
   .chip{font-size:12px;letter-spacing:.5px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;color:var(--gold-pale);background:rgba(212,175,55,.05)}
   .contact{margin-top:40px;padding-top:26px;border-top:1px solid var(--line)}
+
+  /* Literature graph (from the Obsidian vault), sits under the portrait */
+  .hero-text{grid-column:1;grid-row:1 / span 2}
+  .portrait{justify-self:center}
+  .lit-graph{grid-column:2;grid-row:2;width:100%;margin-top:6px;text-align:center}
+  .lit-graph .stage{position:relative;width:100%;aspect-ratio:1/1}
+  .lit-graph canvas{width:100%;height:100%;display:block;cursor:default;
+    -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
+            mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%)}
+  .lit-graph .tip{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transform:translate(-50%,-130%);
+    transition:opacity .2s;max-width:220px;padding:6px 10px;border-radius:8px;text-align:left;
+    background:rgba(4,6,14,.88);border:1px solid var(--line);font-size:11.5px;line-height:1.4;color:var(--text)}
+  .lit-graph .tip b{display:block;font-family:var(--font-head);font-weight:normal;font-size:15px;color:var(--gold-pale)}
+  .lit-graph .tip i{font-style:normal;color:var(--muted);font-size:10.5px;letter-spacing:.4px}
+  .lit-graph .tip.on{opacity:1}
+  .lit-graph .cap{font-size:10px;letter-spacing:2px;white-space:nowrap;text-transform:uppercase;color:var(--gold-soft);margin-top:4px}
+  .lit-graph .cap-sub{font-family:var(--font-head);font-size:15px;color:var(--muted);margin-top:2px}
   .contact-links{display:flex;flex-wrap:wrap;gap:22px;margin-top:12px}
 
   /* Timeline entries */
@@ -421,6 +438,8 @@
     .mobile-brand{display:block !important}
     .hero{grid-template-columns:1fr;gap:30px}
     .portrait{width:190px;order:-1;margin:0 auto 10px}
+    .hero-text,.lit-graph{grid-column:1;grid-row:auto}
+    .lit-graph{max-width:340px;justify-self:center;margin-top:10px}
   }
   .mobile-brand{display:none;font-family:var(--font-head);color:var(--gold);font-size:22px;margin-bottom:30px}
 
@@ -485,7 +504,7 @@
     <!-- ========== 01 HOME ========== -->
     <section class="panel" id="home" role="tabpanel">
       <div class="hero">
-        <div>
+        <div class="hero-text">
           <div class="kicker">Astrobiology · Early Earth · Origins of Life</div>
           <h1>Hi! I'm Gouri.</h1>
           <div class="rule"></div>
@@ -516,6 +535,15 @@
           <div class="orbit"></div>
           <div class="photo"><img src="images/gouri-iceland.jpg" alt="Gouripriya S. Menon in Iceland"></div>
         </div>
+        <!-- LITERATURE GRAPH: drawn from literature-graph.js. To refresh it, run
+             python tools/build_literature_graph.py "<path to Obsidian Vault>/Vault" -->
+        <figure class="lit-graph" id="litGraph" aria-label="Graph of my PhD literature notes and how they link">
+          <div class="stage"><canvas></canvas><div class="tip"></div></div>
+          <figcaption>
+            <div class="cap">My growing body of PhD literature</div>
+            <div class="cap-sub" id="litCount"></div>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
@@ -1359,6 +1387,109 @@ document.querySelectorAll('.proj-toggle').forEach(function(b){
     if(document.hidden){ fadeTo(0, 1); setTimeout(()=>{ if(document.hidden) ctx.suspend(); }, 1300); }
     else { await ctx.resume(); fadeTo(LEVEL, 3); }
   });
+})();
+</script>
+<script src="literature-graph.js"></script>
+<script>
+/* ============ LITERATURE GRAPH: Obsidian-style link graph of my notes ============ */
+(() => {
+  const G = window.LIT_GRAPH, fig = document.getElementById('litGraph');
+  if (!G || !fig) { if (fig) fig.style.display = 'none'; return; }
+  const cv = fig.querySelector('canvas'), x = cv.getContext('2d'), tip = fig.querySelector('.tip');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const N = G.nodes.length, papers = G.nodes.filter(n => n.k === 'p').length;
+  document.getElementById('litCount').textContent =
+    papers + ' papers · ' + (N - papers) + ' concept notes · ' + G.links.length + ' links';
+
+  // neighbours and degree
+  const nb = G.nodes.map(() => new Set());
+  G.links.forEach(([a, b]) => { nb[a].add(b); nb[b].add(a); });
+  const nodes = G.nodes.map((n, i) => {
+    const deg = nb[i].size, hub = n.k === 'c';
+    return { ...n, deg, hub, r: hub ? 3.2 + Math.sqrt(deg) * .55 : 1.3 + Math.sqrt(deg) * .42,
+      x: Math.cos(i * 2.4) * (40 + i), y: Math.sin(i * 2.4) * (40 + i), vx: 0, vy: 0,
+      tw: Math.random() * 6.28 };
+  });
+
+  // settle a small force layout once (repel, spring along links, pull to centre)
+  for (let step = 0, a = 1; step < 420; step++, a *= .992) {
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+      const p = nodes[i], q = nodes[j]; let dx = p.x - q.x, dy = p.y - q.y, d2 = dx * dx + dy * dy || .01;
+      if (d2 > 90000) continue;
+      const f = 900 * a / d2, d = Math.sqrt(d2); dx /= d; dy /= d;
+      p.vx += dx * f; p.vy += dy * f; q.vx -= dx * f; q.vy -= dy * f;
+    }
+    G.links.forEach(([i, j]) => {
+      const p = nodes[i], q = nodes[j], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || .01;
+      const f = (d - 34) * .03 * a, fx = dx / d * f, fy = dy / d * f;
+      p.vx += fx; p.vy += fy; q.vx -= fx; q.vy -= fy;
+    });
+    nodes.forEach(p => { p.vx -= p.x * .012 * a; p.vy -= p.y * .012 * a;
+      p.x += p.vx; p.y += p.vy; p.vx *= .55; p.vy *= .55; });
+  }
+  const ext = Math.max(...nodes.map(p => Math.hypot(p.x, p.y) + p.r)) || 1;
+
+  let W = 0, H = 0, S = 1, ang = 0, hover = -1, last = performance.now(), visible = true;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function size() {
+    const b = cv.getBoundingClientRect(); if (!b.width) return;
+    W = b.width; H = b.height; cv.width = W * dpr; cv.height = H * dpr;
+    S = Math.min(W, H) * .47 / ext; draw();
+  }
+  function pos(p) {
+    const c = Math.cos(ang), s = Math.sin(ang);
+    return [W / 2 + (p.x * c - p.y * s) * S, H / 2 + (p.x * s + p.y * c) * S];
+  }
+  function draw(t = 0) {
+    if (!W) return;
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    const P = nodes.map(pos), hn = hover >= 0 ? nb[hover] : null;
+    x.lineWidth = .6;
+    G.links.forEach(([i, j]) => {
+      const on = hn && (i === hover || j === hover);
+      x.strokeStyle = on ? 'rgba(241,220,154,.55)' : hn ? 'rgba(212,175,55,.04)' : 'rgba(212,175,55,.11)';
+      x.beginPath(); x.moveTo(P[i][0], P[i][1]); x.lineTo(P[j][0], P[j][1]); x.stroke();
+    });
+    nodes.forEach((p, i) => {
+      const lit = !hn || i === hover || hn.has(i);
+      const tw = reduce ? 1 : .8 + .2 * Math.sin(t / 900 + p.tw);
+      const alpha = (lit ? 1 : .18) * tw, [px, py] = P[i];
+      if (p.hub) {
+        const g = x.createRadialGradient(px, py, 0, px, py, p.r * 4);
+        g.addColorStop(0, 'rgba(241,220,154,' + .35 * alpha + ')'); g.addColorStop(1, 'rgba(241,220,154,0)');
+        x.fillStyle = g; x.beginPath(); x.arc(px, py, p.r * 4, 0, 6.29); x.fill();
+      }
+      x.fillStyle = p.hub ? 'rgba(241,220,154,' + alpha + ')' : 'rgba(212,175,55,' + .85 * alpha + ')';
+      x.beginPath(); x.arc(px, py, i === hover ? p.r + 1.5 : p.r, 0, 6.29); x.fill();
+    });
+  }
+  function loop(t) {
+    if (visible && W) { ang += (t - last) * 0.000012; draw(t); }
+    last = t; requestAnimationFrame(loop);
+  }
+
+  cv.addEventListener('pointermove', e => {
+    const b = cv.getBoundingClientRect(), mx = e.clientX - b.left, my = e.clientY - b.top;
+    let best = -1, bd = 14 * 14;
+    nodes.forEach((p, i) => { const [px, py] = pos(p), d = (px - mx) ** 2 + (py - my) ** 2; if (d < bd) { bd = d; best = i; } });
+    hover = best; cv.style.cursor = best >= 0 ? 'pointer' : 'default';
+    if (best >= 0) {
+      const n = nodes[best], [px, py] = pos(n);
+      tip.innerHTML = '<b></b><span></span><i></i>';
+      tip.querySelector('b').textContent = n.l;
+      tip.querySelector('span').textContent = n.p || '';
+      tip.querySelector('i').textContent = n.hub ? 'Concept note · ' + n.deg + ' linked papers' : n.t;
+      tip.style.left = Math.min(Math.max(px, 90), W - 90) + 'px'; tip.style.top = py + 'px';
+      tip.classList.add('on');
+    } else tip.classList.remove('on');
+    if (reduce) draw();
+  });
+  cv.addEventListener('pointerleave', () => { hover = -1; tip.classList.remove('on'); if (reduce) draw(); });
+
+  new ResizeObserver(size).observe(cv);
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(cv);
+  size();
+  if (!reduce) requestAnimationFrame(loop);
 })();
 </script>
 </body>
